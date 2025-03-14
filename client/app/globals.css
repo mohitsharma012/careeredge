@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
+}
+
+.animate-dash {
+  animation: dash 2s linear infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #508CA4, #0A8754, #004F2D);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shine 3s linear infinite;
+}
+
+.gradient-bg {
+  background: linear-gradient(-45deg, #BFD7EA, #91AEC1, #508CA4);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+:root {
+  --font-roboto: 'Roboto', sans-serif;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 191, 215, 234;
+  --background-end-rgb: 145, 174, 193;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
+  font-family: var(--font-roboto);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-roboto);
+  letter-spacing: -0.02em;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 201 47% 81%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 201 47% 81%;
+    --radius: 0.5rem;
+  }
+}
+
+.section-padding {
+  @apply py-20 px-4 sm:py-24 sm:px-6 lg:py-32 lg:px-8;
+}
+
+.container-width {
+  @apply max-w-7xl mx-auto;
+}
+
+.heading-xl {
+  @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight;
+}
+
+.heading-lg {
+  @apply text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight;
+}
+
+.heading-md {
+  @apply text-2xl sm:text-3xl font-bold tracking-tight;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-custom-medium to-custom-darkest;
+}
+
+.nav-blur {
+  backdrop-filter: blur(12px);
+  background: rgba(191, 215, 234, 0.8);
+  border-bottom: 1px solid rgba(145, 174, 193, 0.3);
+}
+
+.feature-icon {
+  padding: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #BFD7EA, #91AEC1);
+  box-shadow: 
+    4px 4px 8px #91AEC1,
+    -4px -4px 8px #BFD7EA;
+}
+
+.step-card {
+  border-radius: 20px;
+  background:  #0A8754;
+  box-shadow: 
+    3px 3px 6px #508CA4,
+    -3px -3px 6px #BFD7EA;
+  transition: all 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-15px);
+  box-shadow: 
+    8px 8px 20px #91AEC1,
+    -8px -8px 20px #BFD7EA;
+}
