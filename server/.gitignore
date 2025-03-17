@@ -1,0 +1,7 @@
+venv
+src/.env
+*.pyc
+src/backend/**/__pycache__/
+.env
+logs.log
+myenv

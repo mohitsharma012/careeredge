@@ -12,8 +12,12 @@ const Navbar: React.FC = () => {
             href: "/",
         },
         {
+            name: "Templates",
+            href: "/templates",
+        },
+        {
             name: "Features",
-            href: "/how-it-works",
+            href: "#",
         },
         {
             name: "How It Works",
@@ -40,16 +44,16 @@ const Navbar: React.FC = () => {
                     <div className="hidden md:flex items-center gap-8">
 
                         {NavbarItems.map((item, index) => (
-                            <Link key={index} href={item.href} className="text-sm font-medium text-gray-600 hover:text-custom-darkest transition-colors">
+                            <Link key={index} href={item.href} className="text-sm font-medium text-gray-600 hover:text-custom-darker transition-colors">
                                 {item.name}
                             </Link>
                         ))}
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href={"/auth"}>
-                        <Button variant="ghost" className="font-medium text-custom-dark hover:text-custom-darkest">Log in</Button>
+                        <Link href={"/auth?is_login=true"}>
+                        <Button variant="ghost" className="font-medium text-custom-dark hover:text-custom-moreDarker">Log in</Button>
                         </Link>
-                        <Link href={"/auth"}>
+                        <Link href={"/auth?is_login=false"} passHref>
                         <Button className="border rounded-3xl border-custom-dark text-custom-dark hover:bg-custom-dark hover:text-white">
                             Get Started 
                         </Button>

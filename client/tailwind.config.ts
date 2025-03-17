@@ -26,12 +26,15 @@ const config: Config = {
           900: '#002711',
         },
         custom: {
-          lightest: '#BFD7EA',
-          light: '#91AEC1',
-          medium: '#508CA4',
-          dark: '#0A8754',
-          darker: '#07653F',
-          darkest: '#004F2D',
+          lightYellow: '#FFB300',
+          darkYellow: '#FB8500',
+          lightest: '#F0FAFF',
+          light: '#8ECAE6',
+          medium: '#65CEFF',
+          dark: '#29B6F6',
+          darker: '#1E88E5',
+          moreDarker: '#045eac',
+          darkest: '#1A237E',
         }
       },
       backgroundImage: {

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, CheckCircle2, Brain, FileText, Zap, Upload, Download, Target, RefreshCcw, FileUp, FileSearch, FileCheck, ChevronRight } from "lucide-react";
 import Image from 'next/image'
+import Link from 'next/link'
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import ImageCarousel from "@/components/ui/image-carousel";
 
@@ -110,7 +111,7 @@ export default function Home() {
 
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-custom-lightest">
 
 
       {/* Hero Section */}
@@ -120,21 +121,21 @@ export default function Home() {
             <div className="absolute inset-0 "></div>
           </div>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full  border border-blue-100 mb-6 animate-slide-up">
-            <Zap className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800">AI-Powered CV Optimization</span>
+            <Zap className="h-4 w-4 text-custom-moreDark" />
+            <span className="text-sm font-medium text-custom-darkest">AI-Powered CV Optimization</span>
           </div>
           <h1 className="text-4xl  md:text-6xl  text-left md:text-center font-bold md:font-medium  leading-tight mb-4 animate-scale-in">
-            Create a  Job-Ready <br /> <span className="text-custom-dark "> Professional Resume </span>
+            Create a  Job-Ready <br /> <span className="text-custom-darker "> Professional Resume </span>
             in Minutes
           </h1>
           <p className="text-base md:text-lg text-gray-600 mb-6 mx-auto max-w-2xl text-left md:text-center animate-slide-up">
             Enhance your resume with AI technology to stand out to employers. Our service helps you get noticed and land your dream job.
           </p>
           <div className="flex justify-center gap-4 animate-slide-up">
-            <Button size="lg" className="bg-custom-dark hover:bg-custom-darker text-white transition-all duration-300">
+            <Button size="lg" className="bg-custom-darker hover:bg-custom-moreDarker text-white transition-all duration-300">
               Analyze Your CV <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" className="border-2 hover:bg-custom-lightest transition-all duration-300">
+            <Button size="lg" variant="outline" className="border-2 text-custom-darker hover:text-white hover:bg-custom-medium transition-all duration-300">
               Watch Demo
             </Button>
           </div>
@@ -142,8 +143,8 @@ export default function Home() {
         <div className="mx-auto drop-shadow-[0_30px_30px_rgba(0,0,0,0.25)]">
           <Image
             src="/home/heroImage.png"
-            width={900}
-            height={900}
+            width={1000}
+            height={1000}
             alt="Picture of the author"
           />
 
@@ -151,9 +152,9 @@ export default function Home() {
       </section>
 
       {/* Quick Steps */}
-      <section className="md:py-14 px-4 max-w-5xl mx-auto">
+      <section className="md:py-16 px-4 max-w-4xl mx-auto">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl font-bold  leading-tight mb-2">How It Works ?</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Transform your CV into an interview-winning document in three simple steps
@@ -161,8 +162,8 @@ export default function Home() {
           </div>
           <div className="grid  md:grid-cols-3 gap-8 ">
             {quickSteps.map((step, index) => (
-              <div key={index} className="step-card md:px-8 py-10 flex md:flex-col gap-6 px-4">
-                <div className="md:mb-8 md:px-8 p-5 md:py-6 my-auto md:me-auto bg-white font-sans text-custom-medium md:text-3xl font-semibold rounded-xl">
+              <div key={index} className="step-card bg-custom-darker md:px-8 py-9 md:py-12 flex md:flex-col gap-6 px-4">
+                <div className="md:mb-8 md:px-8 p-5 md:py-6 my-auto md:me-auto bg-white font-sans text-custom-darker md:text-3xl font-semibold rounded-xl">
                   {step.icon}
                 </div>
                 <div className="flex  flex-col my-auto">
@@ -178,8 +179,8 @@ export default function Home() {
 
       {/* Templates */}
       <div className="relative overflow-hidden  py-20 max-w-5xl mx-auto">
-        <div className="mx-auto flex flex-col mb-10">
-          <span className="text-sm mx-auto font-medium text-blue-800 mb-4">OPTIMIZED DESIGN</span>
+        <div className="mx-auto flex flex-col mb-24">
+          <span className="text-sm mx-auto font-medium text-custom-darkest mb-4">OPTIMIZED DESIGN</span>
           <div className="text-center mb-10 max-w-4xl mx-auto">
             <h2 className="text-4xl md:text-5xl mb-4 font-bold">Make your Resume with Proven Professional Templates</h2>
             <p className="text-gray-600 px-8 text-base mx-auto">
@@ -189,6 +190,12 @@ export default function Home() {
         </div>
         <div className="">
           <ImageCarousel items={templatesData} />
+        </div>
+        <div className="mx-auto flex md:mt-24">
+
+          <Link href="/templates" className="mx-auto border text-sm border-custom-darker text-custom-darker hover:bg-custom-dark hover:text-white py-3 px-6 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300">
+            See More Templates
+          </Link>
         </div>
       </div>
 
@@ -221,7 +228,7 @@ export default function Home() {
 
 
       {/* Success Stories */}
-      <section className="py-4 px-4">
+      <section className="py-4 mt-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6 md:mb-12">
             <h2 className="text-4xl font-serif mb-4">Success Stories</h2>
@@ -260,9 +267,9 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4">
+      <section className="py-16  px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="hero-card py-16 px-8 md:p-12 bg-gradient-to-r bg-custom-medium overflow-hidden relative">
+          <div className="hero-card py-16 px-8 md:p-12 bg-gradient-to-r bg-custom-darker overflow-hidden relative">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjMzczAxMiAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMnptMC0yYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJzLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyeiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMSIvPjwvZz48L3N2Zz4=')] opacity-10"></div>
             <div className="relative z-10 text-center">
               <h2 className="text-4xl font-serif mb-4 text-white">
@@ -277,6 +284,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+
       </section>
     </main>
   );
