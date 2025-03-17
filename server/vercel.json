@@ -1,15 +1,15 @@
 {
-  "version": 2,
-  "builds": [
+    "devCommand": "uvicorn main:app --host 0.0.0.0 --port 3000",
+    "builds": [
       {
-          "src": "./src/main.py",
-          "use": "@vercel/python"
+        "src": "/src/main.py",
+        "use": "@vercel/python"
       }
-  ],
-  "routes": [
+    ],
+    "routes": [
       {
-          "src": "/(.*)",
-          "dest": "/src/main.py"
+        "src": "/(.*)",
+        "dest": "/src/main.py"
       }
-  ]
-}
+    ]
+  }

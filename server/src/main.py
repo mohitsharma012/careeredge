@@ -10,7 +10,7 @@ from backend.config.db import Base, engine
 from backend.config.config import Config
 from backend.config.logger import LoggingMiddleware
 
-
+print("Starting the FastAPI app...")
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 version = "v1"
@@ -57,5 +57,5 @@ Base.metadata.create_all(bind=engine)
 async def root():
     return {"message": "Welcome to Shopify App Backend!", "docs": "/docs"}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8081)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8081)
