@@ -6,9 +6,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
 # from backend.routes import app_router
-from backend.config.db import Base, engine
-from backend.config.config import Config
-from backend.config.logger import LoggingMiddleware
+from .backend.config.db import Base, engine
+from .backend.config.config import Config
+from .backend.config.logger import LoggingMiddleware
 
 print("Starting the FastAPI app...")
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
