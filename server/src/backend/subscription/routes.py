@@ -10,14 +10,14 @@ from fastapi import APIRouter, status, Depends, HTTPException, Request, Header
 
 from ..config.db import get_db
 from ..config.config import Config
-from ..shop.models import Shop
+from ..accounts.models import Shop
 from .filters import SubscriptionFilter
 from .serializer import SubscriptionPlanCreateSerializer, SubscriptionPlanUpdateSerializer
 from .models import SubscriptionPlan, SubscriptionFrequency, SubscriptionPlanProduct, SubscriptionPlanProductVariant, Subscription
 from .services import add_products_and_variants_to_plan, delete_products_and_variants_from_plan
-from ..shop.services import get_shopify_session, get_current_shop_url
-from ..shop.services import get_product_collections
-from ..shop.services import get_shopify_shop_products, validate_product_and_variants
+from ..accounts.services import get_shopify_session, get_current_shop_url
+from ..accounts.services import get_product_collections
+from ..accounts.services import get_shopify_shop_products, validate_product_and_variants
 from ..config.logger import logger  # Import the logger
 
 subscription_plan_router = APIRouter()

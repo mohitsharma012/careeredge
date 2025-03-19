@@ -8,13 +8,12 @@ from jose import JWTError
 from fastapi.security import APIKeyHeader
 
 from ..config.config import Config
-from ..shop.constants import REFRESH_TOKEN_EXPIRE_DAYS, ACCESS_TOKEN_EXPIRE_MINUTES
+from ..accounts.constants import REFRESH_TOKEN_EXPIRE_DAYS, ACCESS_TOKEN_EXPIRE_MINUTES
 
 api_key_header = APIKeyHeader(name="token", auto_error=False)
 
 class TokenData(BaseModel):
-    shop_url: str | None = None
-    shopifyToken: str | None = None
+    email: str | None = None
 
 
 def get_password_hash(password: str) -> str:
@@ -42,13 +41,10 @@ def create_refresh_token(data: dict):
 def verify_token(token: str, credentials_exception: HTTPException) -> TokenData:
     try:
         payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
-        shop_url: str = payload.get("shop_url")
-        shopifyToken: str = payload.get("shopifyToken")
-        if shop_url is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
-        if shopifyToken is None:
-            raise credentials_exception
-        return TokenData(shop_url=shop_url, shopifyToken=shopifyToken)
+        return TokenData(email=email)
     except Exception as e:
         raise credentials_exception
 

@@ -1,14 +1,52 @@
 import json
 import shopify
 import requests
+from passlib.context import CryptContext
 from fastapi.security import APIKeyHeader
 from fastapi import HTTPException, Request, Security, status, Depends
 
 from .constants import API_VERSION
 from ..base.auth import verify_token
 from ..config.config import Config
+from ..base import response
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    
+def get_current_user(request: Request, api_key: str = Security(api_key_header)):
+    token = request.headers.get("Authorization")
+    if not token:
+        return response.BadRequest("Token not found")
+    parts = token.split(" ")
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authorization header format")
+    token = parts[1]
+    try:
+        return verify_token(token, response.BadRequest("Invalid token"))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception as e:
+        return False
+
+
+
+
+
+
+
+
+
+
+
 async def get_shopify_session(request: Request, api_key: str = Security(api_key_header)):
     token = request.headers.get("Authorization")
     if not token:
@@ -124,6 +162,21 @@ def validate_product_and_variants(product_ids, variants_ids, products_map):
     validate_bulk_products(product_ids, products_map) if product_ids else None
     validate_bulk_variants(variants_ids, products_map) if variants_ids else None
     return True
+
+def execute_shopify_graphql_query(shop_url, shopify_token, query, variables=None):  
+  """Executes a Shopify GraphQL query."""
+  url = f"https://{shop_url}/admin/api/{API_VERSION}/graphql.json"
+  headers = {
+    'Content-Type': 'application/json',
+    'X-Shopify-Access-Token': shopify_token
+  }
+  payload = {
+    'query': query,
+    'variables': variables
+  }
+  response = requests.post(url, headers=headers, json=payload)
+  return response.json()
+
   
 def register_webhook(shop_domain: str, shopify_token: str):
     webhook_payload = {

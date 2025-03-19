@@ -5,12 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
-# from backend.routes import app_router
-from .backend.config.db import Base, engine
-from .backend.config.config import Config
-from .backend.config.logger import LoggingMiddleware
+from backend.routes import app_router
+from backend.config.db import Base, engine
+from backend.config.config import Config
+from backend.config.logger import LoggingMiddleware
+from backend.base.exceptions import global_exception_handler
 
-print("Starting the FastAPI app...")
+
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 version = "v1"
@@ -32,6 +33,9 @@ app = FastAPI(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"/api/{version}/user/token")
 
+# Global exception handler
+app.add_exception_handler(Exception, global_exception_handler)
+
 # Middlewares
 app.add_middleware(LoggingMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=Config.SESSION_SECRET_KEY)
@@ -50,12 +54,12 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 # include the routers
-# app.include_router(app_router, prefix=f"/api/{version}")
+app.include_router(app_router, prefix=f"/api/{version}")
 
 
 @app.get("/", tags=["Root"])
 async def root():
     return {"message": "Welcome to Shopify App Backend!", "docs": "/docs"}
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8081)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8081)

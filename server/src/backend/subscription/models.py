@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Boolean, Float, ForeignKey, BigInteger
 
 from ..config.db import Base
-from ..shop.models import Shop
+from ..accounts.models import Shop
 from ..base.models import TimeStampedModel
 
 

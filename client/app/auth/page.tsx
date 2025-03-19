@@ -70,6 +70,7 @@ export default function AuthPage() {
 
     try {
       if (mode === "login") {
+        
        
 
         router.push("/dashboard");
