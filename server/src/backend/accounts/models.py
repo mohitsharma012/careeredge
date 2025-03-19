@@ -13,6 +13,7 @@ class User(TimeStampedModel):
     is_verified = Column(Boolean, default=False)
 
     otp = relationship("Otp", back_populates="user")
+    resumes = relationship("Resume", back_populates="user")
 
 
 class Otp(TimeStampedModel):
@@ -23,7 +24,3 @@ class Otp(TimeStampedModel):
     is_used = Column(Boolean, default=False)
     expires_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(minutes=10))  
     user = relationship("User", back_populates="otp")
-
-
-
-

@@ -1,5 +1,4 @@
 import os
-import shopify
 from typing import List
 from datetime import timedelta
 from fastapi import APIRouter, status, Depends, Request
@@ -40,6 +39,9 @@ from .services import get_current_user, hash_password, verify_password
 from ..base.services import generate_otp
 from .models import User, Otp
 from datetime import datetime
+import openai 
+
+openai_api_key = "test-key"
 
 
 
@@ -114,6 +116,8 @@ async def resend_otp(
     otp.expires_at = datetime.utcnow() + timedelta(minutes=10)
     db.commit()
     return response.Ok("OTP sent to your email")
+
+
 
 
     
