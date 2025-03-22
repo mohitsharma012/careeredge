@@ -5,6 +5,7 @@ from fastapi import APIRouter, status, Depends, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 
 from .models import User
 from ..config.db import get_db
@@ -35,9 +36,9 @@ from ..base import response
 
 
 from .serializer import UserRegisterSerializer, UserLoginSerializer, UserAccountVerifySerializer, UserEmailSerializer
-from .services import get_current_user, hash_password, verify_password
+from .services import get_current_user, hash_password, referral_code_generator, verify_password
 from ..base.services import generate_otp
-from .models import User, Otp
+from .models import User, Referral
 from datetime import datetime
 import openai 
 
@@ -47,75 +48,87 @@ openai_api_key = "test-key"
 
 
 account_router = APIRouter()
+token_router = APIRouter()
 
 @account_router.post("/register")
 async def register(request_data: UserRegisterSerializer, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request_data.email).first()
-    if user and user.is_verified:
+    if user:
         raise response.BadRequest("User already exists")
-    if user and not user.is_verified:
-        otp = db.query(Otp).filter(Otp.user_id == user.id).first()
-        db.delete(otp)
-        db.flush()
-        db.add(Otp(user_id=user.id, otp=generate_otp(length=6)))
-        db.commit()
-        return response.Ok("OTP sent to your email")
-    user = User(name=request_data.name, email=request_data.email, password=hash_password(request_data.password))
+    referral_code = referral_code_generator(request_data.name)
+    while db.query(User).filter(User.referral_code == referral_code).first():
+        referral_code = referral_code_generator(request_data.name)
+    user = User(name=request_data.name, email=request_data.email, password=hash_password(request_data.password), referral_code=referral_code)
     db.add(user)
     db.flush()
-    db.add(Otp(user_id=user.id, otp=generate_otp(length=6)))
+    if request_data.referral_code:
+        referred_by = db.query(User).filter(User.referral_code == request_data.referral_code).first()
+        db.add(Referral(user_id=user.id, referred_by=referred_by.id))
     db.commit()
-    return response.Ok("OTP sent to your email")
+    access_token = create_access_token({"email": user.email})
+    refresh_token = create_refresh_token({"email": user.email})
+    
+    return response.Ok("Verification email sent", {"access_token": access_token, "refresh_token": refresh_token})
 
 @account_router.post("/login")
 async def login(request_data: UserLoginSerializer, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request_data.email).first()
-    if not user or not user.is_verified:
+    if not user:
         raise response.BadRequest("Invalid credentials")
     if not verify_password(request_data.password, user.password):
         raise response.BadRequest("Invalid credentials")
     access_token = create_access_token({"email": user.email})
     refresh_token = create_refresh_token({"email": user.email})
     return response.Ok("Login successful", {"access_token": access_token, "refresh_token": refresh_token})
-   
+
+class refresh_token(BaseModel):
+    refresh: str
+
+@token_router.post("/refresh")
+async def refresh(refresh_token: refresh_token):
+    email = verify_token(refresh_token, response.BadRequest("Invalid refresh token"))
+
+    if not email:
+        raise response.BadRequest("Invalid refresh token")
+    new_access_token = create_access_token({"email": email})
+    new_refresh_token = create_refresh_token({"email": email})
+
+    return response.Ok("Token refreshed", {"access_token": new_access_token, "refresh_token": new_refresh_token})
 
 
-@account_router.post("/verify-account")
-async def verify_account(
-    request_data: UserAccountVerifySerializer, 
-    db: Session = Depends(get_db)
+@account_router.get("/user-clone")
+async def user_clone(
+    db: Session = Depends(get_db),
+    email: str = Depends(get_current_user)
 ):
-    user = db.query(User).filter(User.email == request_data.email).first()
+    user = db.query(User).filter(User.email == email).first()
     if not user:
-        raise response.BadRequest("No user found")
-    if user.is_verified:
-        raise response.BadRequest("User already verified")
-    otp = db.query(Otp).filter(Otp.user_id == user.id, Otp.otp == request_data.otp).first()
-    if not otp:
-        raise response.BadRequest("Invalid OTP")
-    if otp.expires_at < datetime.utcnow():
-        raise response.BadRequest("OTP expired")
-    user.is_verified = True
-    db.commit()
-    return response.Ok("Account verified successfully")
+        raise response.BadRequest("Invalid credentials")
+    
+    
+    
 
+    return response.Ok("User found", {"email": user.email, "name": user.name})
 
-@account_router.post("/resend-otp")
-async def resend_otp(
-    request_data: UserEmailSerializer, 
-    db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request_data.email).first()
-    if not user:
-        raise response.BadRequest("No user found")
-    otp = db.query(Otp).filter(Otp.user_id == user.id).first()
-    if not otp:
-        raise response.BadRequest("No OTP found")
-    if otp.expires_at > datetime.utcnow():
-        raise response.BadRequest("OTP not expired")
-    otp.otp = generate_otp(length=6)
-    otp.expires_at = datetime.utcnow() + timedelta(minutes=10)
-    db.commit()
-    return response.Ok("OTP sent to your email")
+# @account_router.post("/verify-account")
+# async def verify_account(
+#     request_data: UserAccountVerifySerializer, 
+#     db: Session = Depends(get_db)
+# ):
+#     user = db.query(User).filter(User.email == request_data.email).first()
+#     if not user:
+#         raise response.BadRequest("No user found")
+#     if user.is_verified:
+#         raise response.BadRequest("User already verified")
+#     otp = db.query(Otp).filter(Otp.user_id == user.id, Otp.otp == request_data.otp).first()
+#     if not otp:
+#         raise response.BadRequest("Invalid OTP")
+#     if otp.expires_at < datetime.utcnow():
+#         raise response.BadRequest("OTP expired")
+#     user.is_verified = True
+#     db.commit()
+#     return response.Ok("Account verified successfully")
+
 
 
 

@@ -17,39 +17,11 @@ interface Section {
   icon: React.ReactNode;
   title: string;
 }
+import { FormSections } from "@/components/resume-builder/builder_form_data"
 
-const sections: Section[] = [
-  {
-    id: "contact",
-    icon: <User className="h-4 w-4" />,
-    title: "Contact Info",
-  },
-  {
-    id: "experience",
-    icon: <Briefcase className="h-4 w-4" />,
-    title: "Experience",
-  },
-  {
-    id: "education",
-    icon: <GraduationCap className="h-4 w-4" />,
-    title: "Education",
-  },
-  {
-    id: "certifications",
-    icon: <Award className="h-4 w-4" />,
-    title: "Certifications",
-  },
-  {
-    id: "skills",
-    icon: <Star className="h-4 w-4" />,
-    title: "Additional Skills",
-  },
-  {
-    id: "objective",
-    icon: <FileText className="h-4 w-4" />,
-    title: "Career Objective",
-  },
-];
+
+const sections: Section[] = FormSections;
+
 
 interface ResumeSectionsProps {
   activeSection: string;
@@ -61,7 +33,7 @@ export function ResumeSections({ activeSection, onSectionChange }: ResumeSection
 
   const isSectionFilled = (sectionId: string): boolean => {
     switch (sectionId) {
-      case "contact":
+      case "personal":
         return Object.values(resumeData.personalInfo).filter(Boolean).length >= 4;
       case "experience":
         return resumeData.experience.length > 0;
@@ -79,8 +51,8 @@ export function ResumeSections({ activeSection, onSectionChange }: ResumeSection
   };
 
   return (
-    <div className="w-full px-4 py-6">
-      <div className="flex items-center justify-between max-w-6xl mx-auto">
+    <div className="w-full py-2 bg-white">
+      <div className="flex items-center justify-between  mx-auto">
         {sections.map((section, index) => (
           <div key={section.id} className="flex items-center relative">
             {/* Section Button */}
@@ -89,35 +61,42 @@ export function ResumeSections({ activeSection, onSectionChange }: ResumeSection
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => onSectionChange(section.id)}
-              className="flex flex-col items-center"
+              className={`flex items-center gap-2
+                ${activeSection == section.id
+                  ? "bg-custom-darker px-3 pr-9 py-2 rounded-3xl"
+                  : index < sections.findIndex(s => s.id === activeSection)
+                  ? "bg-custom-darker text-white px-3 pr-9 py-2 rounded-3xl"
+                  : " px-3 pr-9 py-2 rounded-3xl bg-slate-200"
+
+                } `}
             >
               {/* Icon Container */}
               <div
                 className={cn(
-                  "relative flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300",
+                  "relative flex items-center justify-center w-7 h-7 rounded-full border-2 transition-all duration-300",
                   activeSection === section.id
-                    ? "border-custom-medium bg-custom-medium text-white"
+                    ? " bg-white "
                     : index < sections.findIndex(s => s.id === activeSection)
-                    ? "border-custom-dark bg-custom-dark text-white"
-                    : "border-custom-light bg-white text-custom-light"
+                    ? "bg-white  text-black"
+                    : "border-custom-light bg-white text-black"
                 )}
               >
                 {section.icon}
                 
                 {/* Completion Indicator */}
                 {isSectionFilled(section.id) && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-custom-darkest rounded-full border-2 border-white" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-custom-darkYellow rounded-full border-2 border-white" />
                 )}
               </div>
               
               {/* Title */}
               <span className={cn(
-                "text-xs mt-2 font-medium whitespace-nowrap",
+                "text-sm font-medium whitespace-nowrap",
                 activeSection === section.id
-                  ? "text-custom-medium"
+                  ? "text-white"
                   : index < sections.findIndex(s => s.id === activeSection)
-                  ? "text-custom-dark"
-                  : "text-custom-light"
+                  ? "text-white"
+                  : "text-black"
               )}>
                 {section.title}
               </span>
@@ -127,7 +106,7 @@ export function ResumeSections({ activeSection, onSectionChange }: ResumeSection
             {index < sections.length - 1 && (
               <div className="flex-1 mx-2">
                 <div className={cn(
-                  "h-[2px]",
+                  "h-[9px]",
                   index < sections.findIndex(s => s.id === activeSection)
                     ? "bg-custom-dark"
                     : index === sections.findIndex(s => s.id === activeSection)

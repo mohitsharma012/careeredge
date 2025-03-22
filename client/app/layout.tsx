@@ -4,7 +4,8 @@ import './globals.css';
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Roboto } from 'next/font/google';
-import { ProjectLoader } from '@/components/loaders/project-loader';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -21,6 +22,11 @@ export default function RootLayout({
  
 
   return (
+    <>
+    <Toaster
+      position="top-right"
+      reverseOrder={true}
+    />
     <html lang="en" suppressHydrationWarning className={roboto.variable}>
       <body suppressHydrationWarning className="font-roboto">
         <AnimatePresence mode="wait">          
@@ -28,5 +34,6 @@ export default function RootLayout({
         </AnimatePresence>
       </body>
     </html>
+    </>
   );
 }

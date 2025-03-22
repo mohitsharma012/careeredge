@@ -37,6 +37,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { ResumePreviewDialog } from "@/components/resume-preview-dialog";
 
 interface SmartResumeProps {
   onCreateNew: () => void;
@@ -59,7 +60,7 @@ interface SmartResume {
 
 export function SmartResume({ onCreateNew }: SmartResumeProps) {
   const [selectedResume, setSelectedResume] = useState<SmartResume | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(true);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
 
@@ -75,7 +76,7 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
       template: "Modern",
       views: 24,
       downloads: 3,
-      thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&q=80",
+      thumbnail: "/templates/template_1.jpg",
       keywords: ["React", "TypeScript", "Frontend Architecture", "UI/UX"],
       atsScore: 92,
     },
@@ -116,20 +117,20 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
   };
 
   return (
-    <div className="min-h-screen bg-custom-lightest/30">
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
+    <div className=" bg-custom-lightest/30">
+      <div className="max-w-7xl mx-auto  space-y-8">
         {/* Header */}
-        <div className="bg-gradient-to-r from-custom-medium to-custom-dark rounded-2xl p-8">
+        <div className="bg-custom-darker rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Smart Resumes</h1>
-              <p className="text-custom-lightest">
+              <h1 className="text-2xl font-bold text-white mb-2">Smart Resumes</h1>
+              <p className="text-custom-lightest text-sm">
                 AI-optimized resumes tailored for specific job positions
               </p>
             </div>
             <Button
               onClick={onCreateNew}
-              className="bg-white text-custom-medium hover:bg-custom-lightest"
+              className="bg-white text-custom-darker hover:bg-white/90"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create Smart Resume
@@ -138,7 +139,7 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
         </div>
 
         {/* Generated Resumes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <AnimatePresence mode="popLayout">
             {smartResumes.map((resume) => (
               <motion.div
@@ -155,12 +156,7 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
                     alt={resume.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-4 right-4">
-                    <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-white" />
-                      <span className="text-white text-sm">{resume.matchScore}% Match</span>
-                    </div>
-                  </div>
+                  
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
                       <Button
@@ -222,145 +218,19 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
         </div>
 
         {/* Preview Dialog */}
-        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-6xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl">{selectedResume?.title}</DialogTitle>
-            </DialogHeader>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
-              {/* Resume Preview */}
-              <div className="lg:col-span-2">
-                <div className="aspect-[1/1.4142] bg-white rounded-lg overflow-hidden shadow-lg">
-                  {selectedResume && (
-                    <img
-                      src={selectedResume.thumbnail}
-                      alt={selectedResume.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              </div>
+        <ResumePreviewDialog 
+          isPreviewOpen={isPreviewOpen}
+          setIsPreviewOpen={setIsPreviewOpen}
+          selectedResume={selectedResume}
+          isOptimizing={isOptimizing}
+          handleOptimizeMore={handleOptimizeMore}
+          onSendEmail={() => {
+            setIsPreviewOpen(false);
+            setIsEmailDialogOpen(true);
+          }}
+        />
+        
 
-              {/* Resume Details */}
-              <div className="space-y-6">
-                {/* Match Score */}
-                <div className="bg-custom-lightest/30 rounded-xl p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="h-5 w-5 text-custom-medium" />
-                    <h3 className="font-medium">Match Score</h3>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Job Match</span>
-                        <span className="font-medium">{selectedResume?.matchScore}%</span>
-                      </div>
-                      <div className="h-2 bg-white rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-custom-medium"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${selectedResume?.matchScore}%` }}
-                          transition={{ duration: 0.8 }}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>ATS Score</span>
-                        <span className="font-medium">{selectedResume?.atsScore}%</span>
-                      </div>
-                      <div className="h-2 bg-white rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-custom-dark"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${selectedResume?.atsScore}%` }}
-                          transition={{ duration: 0.8 }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Keywords */}
-                <div className="bg-custom-lightest/30 rounded-xl p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Target className="h-5 w-5 text-custom-medium" />
-                    <h3 className="font-medium">Key Skills</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedResume?.keywords.map((keyword, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-white rounded-full text-sm text-custom-medium"
-                      >
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-3">
-                  <Button
-                    className="w-full bg-custom-medium hover:bg-custom-dark"
-                    onClick={handleOptimizeMore}
-                    disabled={isOptimizing}
-                  >
-                    {isOptimizing ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"
-                        />
-                        Optimizing...
-                      </>
-                    ) : (
-                      <>
-                        <Wand2 className="h-4 w-4 mr-2" />
-                        Optimize More
-                      </>
-                    )}
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button className="w-full bg-custom-dark hover:bg-custom-darkest">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download As
-                        <ChevronDown className="h-4 w-4 ml-2" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem>
-                        <FileText className="h-4 w-4 mr-2" />
-                        PDF Document
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Word Document
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <FileImage className="h-4 w-4 mr-2" />
-                        Image (PNG)
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <Button
-                    variant="outline"
-                    className="w-full border-custom-light text-custom-medium hover:bg-custom-lightest"
-                    onClick={() => {
-                      setIsPreviewOpen(false);
-                      setIsEmailDialogOpen(true);
-                    }}
-                  >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Send to Email
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
 
         {/* Email Dialog */}
         <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>

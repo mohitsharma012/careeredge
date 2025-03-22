@@ -21,15 +21,21 @@ import { resumeSchema } from "./schema";
 import { useResumeStore } from "./store";
 import { Plus, Trash2, GripVertical } from "lucide-react";
 import { ResumeData } from "./types";
+import { FormSections } from "@/components/resume-builder/builder_form_data"
+
+
+
+
 
 interface ResumeFormProps {
   activeSection: string;
   onDataChange?: (data: ResumeData) => void;
+  setActiveSection: (section: string) => void;
 }
 
-export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
+export function ResumeForm({ activeSection, onDataChange, setActiveSection }: ResumeFormProps) {
   const { resumeData, updateResumeData } = useResumeStore();
-  
+
   const form = useForm<ResumeData>({
     resolver: zodResolver(resumeSchema),
     defaultValues: resumeData,
@@ -47,7 +53,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
     return () => subscription.unsubscribe();
   }, [form.watch, updateResumeData, onDataChange]);
 
-  const { fields: experienceFields, append: appendExperience, remove: removeExperience } = 
+  const { fields: experienceFields, append: appendExperience, remove: removeExperience } =
     useFieldArray({
       control: form.control,
       name: "experience",
@@ -65,9 +71,33 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
       name: "skills",
     });
 
+  const { fields: certificationFields, append: appendCertification, remove: removeCertification } =
+    useFieldArray({
+      control: form.control,
+      name: "certifications",
+    });
+
+  const { fields: projectFields, append: appendProject, remove: removeProject } =
+    useFieldArray({
+      control: form.control,
+      name: "projects",
+    });
+
+  const { fields: achievementFields, append: appendAchievement, remove: removeAchievement } =
+    useFieldArray({
+      control: form.control,
+      name: "achievements",
+    });
+
   const onSubmit = (data: ResumeData) => {
     updateResumeData(data);
     onDataChange?.(data);
+    // update to next section
+    const currentIndex = FormSections.findIndex((section) => section.id === activeSection);
+    if (currentIndex < FormSections.length - 1) {
+      setActiveSection(FormSections[currentIndex + 1].id);
+    }
+
   };
 
   const renderSection = () => {
@@ -77,10 +107,10 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className=""
           >
-            <h2 className="text-xl font-semibold">Personal Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-lg font-semibold">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-black/90">
               <FormField
                 control={form.control}
                 name="personalInfo.fullName"
@@ -90,7 +120,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input placeholder="John Doe" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -103,7 +133,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input placeholder="Software Engineer" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -116,7 +146,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input type="email" placeholder="john@example.com" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -129,7 +159,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input placeholder="+1 (555) 123-4567" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -142,7 +172,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input placeholder="New York, NY" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
@@ -155,22 +185,12 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     <FormControl>
                       <Input placeholder="https://example.com" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
               />
             </div>
-          </motion.div>
-        );
-
-      case "summary":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
-          >
-            <h2 className="text-xl font-semibold">Professional Summary</h2>
+            <h2 className="text-lg font-semibold mt-6">Professional Summary</h2>
             <FormField
               control={form.control}
               name="summary"
@@ -183,10 +203,67 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-600" />
                 </FormItem>
               )}
             />
+          </motion.div>
+        );
+
+      case "skills":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className=""
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Skills</h2>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendSkill({
+                  name: ""
+                })}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Skill
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-0 mt-3">
+              {skillFields.map((field, index) => (
+                <div key={field.id} className="relative w-fit rounded-lg p-2">
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeSkill(index)}
+                  >
+                    <Trash2 className="h-4 w-4 my-auto text-red-500 mt-3" />
+                  </Button>
+
+                  <div className="w-40">
+                    <FormField
+                      control={form.control}
+                      name={`skills.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Python" className="pe-8"  {...field} />
+                          </FormControl>
+                          <FormMessage className="text-red-600" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                </div>
+              ))}
+            </div>
           </motion.div>
         );
 
@@ -198,7 +275,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
             className="space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Work Experience</h2>
+              <h2 className="text-lg font-semibold">Work Experience</h2>
               <Button
                 type="button"
                 variant="outline"
@@ -209,6 +286,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                   startDate: "",
                   endDate: "",
                   current: false,
+                  location: "",
                   description: "",
                   achievements: [],
                 })}
@@ -219,10 +297,8 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
             </div>
             <div className="space-y-6">
               {experienceFields.map((field, index) => (
-                <div key={field.id} className="relative border rounded-lg p-4">
-                  <div className="absolute -left-3 top-1/2 -translate-y-1/2 cursor-move">
-                    <GripVertical className="h-5 w-5 text-gray-400" />
-                  </div>
+                <div key={field.id} className="relative border rounded-lg p-4 text-black/90">
+
                   <Button
                     type="button"
                     variant="ghost"
@@ -232,7 +308,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -243,7 +319,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                           <FormControl>
                             <Input placeholder="Company Name" {...field} />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-red-600" />
                         </FormItem>
                       )}
                     />
@@ -256,7 +332,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                           <FormControl>
                             <Input placeholder="Job Title" {...field} />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-red-600" />
                         </FormItem>
                       )}
                     />
@@ -269,10 +345,11 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                           <FormControl>
                             <Input type="date" {...field} />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className="text-red-600" />
                         </FormItem>
                       )}
                     />
+
                     <FormField
                       control={form.control}
                       name={`experience.${index}.endDate`}
@@ -280,7 +357,33 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                         <FormItem>
                           <FormLabel>End Date</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input type="date" {...field} disabled={form.getValues(`experience.${index}.current`)} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`experience.${index}.current`}
+                      render={({ field }) => (
+                        <FormItem className="flex gap-5 ">
+                          <FormLabel className="mx-0 my-auto">Currently Working Here</FormLabel>
+                          <FormControl className=" my-auto" >
+                            <Input type="checkbox" {...field} checked={field.value} className="w-3" value={undefined} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`experience.${index}.location`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Location</FormLabel>
+                          <FormControl>
+                            <Input placeholder="City, Country" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -300,7 +403,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-red-600" />
                       </FormItem>
                     )}
                   />
@@ -339,9 +442,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
             <div className="space-y-6">
               {educationFields.map((field, index) => (
                 <div key={field.id} className="relative border rounded-lg p-4">
-                  <div className="absolute -left-3 top-1/2 -translate-y-1/2 cursor-move">
-                    <GripVertical className="h-5 w-5 text-gray-400" />
-                  </div>
+
                   <Button
                     type="button"
                     variant="ghost"
@@ -351,7 +452,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -438,7 +539,7 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
           </motion.div>
         );
 
-      case "skills":
+      case "certifications":
         return (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -446,46 +547,46 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
             className="space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Skills</h2>
+              <h2 className="text-lg font-semibold">Certifications</h2>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => appendSkill({
+                onClick={() => appendCertification({
                   name: "",
-                  level: "Beginner",
-                  category: "Technical",
+                  authority: "",
+                  startDate: "",
+                  endDate: "",
+                  url: "",
                 })}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Skill
+                Add Certification
               </Button>
             </div>
-            <div className="space-y-4">
-              {skillFields.map((field, index) => (
+            <div className="space-y-6">
+              {certificationFields.map((field, index) => (
                 <div key={field.id} className="relative border rounded-lg p-4">
-                  <div className="absolute -left-3 top-1/2 -translate-y-1/2 cursor-move">
-                    <GripVertical className="h-5 w-5 text-gray-400" />
-                  </div>
+
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     className="absolute top-2 right-2"
-                    onClick={() => removeSkill(index)}
+                    onClick={() => removeCertification(index)}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name={`skills.${index}.name`}
+                      name={`certifications.${index}.name`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Skill Name</FormLabel>
+                          <FormLabel>Certification Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="JavaScript" {...field} />
+                            <Input placeholder="Certified Scrum Master" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -493,20 +594,12 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     />
                     <FormField
                       control={form.control}
-                      name={`skills.${index}.level`}
+                      name={`certifications.${index}.authority`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Proficiency Level</FormLabel>
+                          <FormLabel>Authority</FormLabel>
                           <FormControl>
-                            <select
-                              className="w-full h-10 px-3 rounded-md border"
-                              {...field}
-                            >
-                              <option value="Beginner">Beginner</option>
-                              <option value="Intermediate">Intermediate</option>
-                              <option value="Advanced">Advanced</option>
-                              <option value="Expert">Expert</option>
-                            </select>
+                            <Input placeholder="Scrum Alliance" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -514,20 +607,212 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
                     />
                     <FormField
                       control={form.control}
-                      name={`skills.${index}.category`}
+                      name={`certifications.${index}.startDate`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Category</FormLabel>
+                          <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <select
-                              className="w-full h-10 px-3 rounded-md border"
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`certifications.${index}.endDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`certifications.${index}.url`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/certification" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        );
+      
+      case "projects":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Projects</h2>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendProject({
+                  name: "",
+                  description: "",
+                  startDate: "",
+                  endDate: "",
+                  current: false,
+                })}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Project
+              </Button>
+            </div>
+            <div className="space-y-6">
+              {projectFields.map((field, index) => (
+                <div key={field.id} className="relative border rounded-lg p-4">
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeProject(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`projects.${index}.name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Project Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Project Name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`projects.${index}.startDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`projects.${index}.endDate`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} disabled={form.getValues(`projects.${index}.current`)} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={
+                        form.control
+                      }
+                      name={`projects.${index}.current`}
+                      render={({ field }) => (
+                        <FormItem className="flex gap-5 ">
+                          <FormLabel className="mx-0 my-auto">Present</FormLabel>
+                          <FormControl className=" my-auto" >
+                            <Input type="checkbox" {...field} checked={field.value} className="w-3" value={undefined} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`projects.${index}.description`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Describe your project..."
+                              className="min-h-[100px]"
                               {...field}
-                            >
-                              <option value="Technical">Technical</option>
-                              <option value="Soft Skills">Soft Skills</option>
-                              <option value="Languages">Languages</option>
-                              <option value="Tools">Tools</option>
-                            </select>
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
+      case "other":
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Achievements</h2>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendAchievement({
+                  title: "",
+                })}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Achievement
+              </Button>
+            </div>
+            <div className="space-y-6">
+              {achievementFields.map((field, index) => (
+                <div key={field.id} className="relative border rounded-lg p-4">
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeAchievement(index)}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`achievements.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Achievement</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Achievement Title" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -547,12 +832,12 @@ export function ResumeForm({ activeSection, onDataChange }: ResumeFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="py-0">
         {renderSection()}
-        
-        <div className="sticky bottom-4 bg-white p-4 rounded-lg shadow-lg border">
-          <Button type="submit" className="w-full">
-            Save Changes
+
+        <div className="sticky bottom-4 p-2 mt-8 flex">
+          <Button type="submit" className="bg-custom-darker text-white align-middle ms-auto">
+            Save
           </Button>
         </div>
       </form>

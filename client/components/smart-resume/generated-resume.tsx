@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Loader } from "@/components/ui/loader";
-import { TemplatesSection } from "@/components/templates-section";
+import { TemplatesSection } from "@/components/dashboard/templates-section";
 import {
   Download,
   Mail,
@@ -54,8 +54,8 @@ export function GeneratedResume({ thumbnail, title, matchScore }: GeneratedResum
   };
 
   return (
-    <div className="min-h-screen bg-custom-lightest/30">
-      <div className="max-w-7xl mx-auto p-8">
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto p-8 bg-white/80">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Resume Preview */}
           <div className="lg:col-span-2">
@@ -82,7 +82,7 @@ export function GeneratedResume({ thumbnail, title, matchScore }: GeneratedResum
           {/* Actions Sidebar */}
           <div className="space-y-6">
             {/* Header */}
-            <div className="bg-white rounded-xl border border-custom-lightest p-6">
+            <div className="bg-white rounded-xl border border-custom-lightest shadow-xl p-6">
               <h2 className="text-xl font-semibold mb-2">{title}</h2>
               <div className="flex items-center gap-2 text-custom-medium">
                 <Wand2 className="h-5 w-5" />

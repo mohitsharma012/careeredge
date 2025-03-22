@@ -1,4 +1,5 @@
 import json
+import random
 import shopify
 import requests
 from passlib.context import CryptContext
@@ -38,6 +39,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
+def referral_code_generator(name:str):
+    """Generate a referral code."""
+    first_name = name.split(" ")[0]
+    return first_name[:3].upper() + str(random.randint(1000, 9999))
 
 
 

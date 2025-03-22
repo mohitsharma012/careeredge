@@ -13,6 +13,7 @@ export interface Experience {
   startDate: string;
   endDate?: string;
   current: boolean;
+  location: string;
   description: string;
   achievements: string[];
 }
@@ -28,8 +29,26 @@ export interface Education {
 
 export interface Skill {
   name: string;
-  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
-  category: "Technical" | "Soft Skills" | "Languages" | "Tools";
+}
+
+export interface Certification {
+  name: string;
+  authority: string;
+  startDate: string;
+  endDate: string;
+  url?: string;
+}
+
+export interface Project {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+}
+
+export interface Achievement {
+  title: string;
 }
 
 export interface ResumeData {
@@ -38,6 +57,9 @@ export interface ResumeData {
   experience: Experience[];
   education: Education[];
   skills: Skill[];
+  certifications: Certification[];
+  projects: Project[];
+  achievements: Achievement[];
 }
 
 export interface Template {

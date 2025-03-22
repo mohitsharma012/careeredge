@@ -1,25 +1,119 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TemplatesSection } from "@/components/templates-section";
-import { ResumeManagement } from "@/components/resume-management";
+import { TemplatesSection } from "@/components/dashboard/templates-section";
+import { ResumeManagement } from "@/components/dashboard/resume-management";
+import { ProjectLoader } from "@/components/loaders/project-loader";
 import { SmartResumeFlow } from "@/components/smart-resume/smart-resume-flow";
 import { SubscriptionSection } from "@/components/subscription-section";
 import { CVAnalysis } from "@/components/cv-analysis/cv-analysis";
 import {
-  FileText, Layout, Briefcase, Globe, Menu, Plus,
-  MoreVertical, Star, ChevronDown, Search, Bell,
-  Settings, Sparkles, Zap, BarChart, Clock, Award,
-  Brain, Wand2, Target, Eye, Share2, Download,
-  ArrowUpRight, Layers, Users, Rocket, Gauge,
-  ChevronLeft, Crown, ChevronRight, FileSearch,
+  FileText,
+  Layout,
+  Briefcase,
+  Globe,
+  Plus,
+  MoreVertical,
+  Star,
+  ChevronDown,
+  Search,
+  Bell,
+  Settings,
+  Sparkles,
+  Zap,
+  BarChart,
+  Clock,
+  Award,
+  Brain,
+  Wand2,
+  Target,
+  Eye,
+  Share2,
+  Download,
+  ArrowUpRight,
+  Layers,
+  Users,
+  Rocket,
+  Gauge,
+  ChevronLeft,
+  Crown,
+  ChevronRight,
+  FileSearch,
+  Menu,
 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { USER_CLONE_API } from "@/constants/api";
+import { getAPI } from "@/utils/apiRequest";
+import { COMPANY_NAME } from "@/constants/constant";
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+
+  useEffect(() => {
+    if (!localStorage.getItem("access")) {
+      router.push("/auth");
+      return;
+    } else {
+      let successFn = (result: any) => {
+        setLoading(false);
+      };
+      let errorFn = (result: any) => {
+        // Delete the token and redirect to login
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        router.push("/auth");
+      };
+
+      getAPI(USER_CLONE_API, successFn, errorFn);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const section = searchParams.get("section");
+    if (section) {
+      setActiveSection(section);
+    }
+  }, [searchParams]);
+
+  const sidebarMenu = [
+    {
+      title: "Dashboard",
+      icon: <Layout className="h-5 w-5" />,
+      section: "dashboard",
+    },
+    {
+      title: "Templates",
+      icon: <Layers className="h-5 w-5" />,
+      section: "templates",
+    },
+    {
+      title: "Resume Builder",
+      icon: <FileText className="h-5 w-5" />,
+      section: "resumes",
+    },
+    {
+      title: "Smart Resumes",
+      icon: <Brain className="h-5 w-5" />,
+      section: "smart-resumes",
+    },
+    {
+      title: "Analyze CV",
+      icon: <FileSearch className="h-5 w-5" />,
+      section: "analyze-cv",
+    },
+    {
+      title: "Subscription",
+      icon: <Crown className="h-5 w-5" />,
+      section: "subscription",
+    },
+  ];
 
   const documents = [
     {
@@ -31,7 +125,7 @@ export default function Dashboard() {
       progress: 92,
       aiScore: 96,
       views: 145,
-      shares: 12
+      shares: 12,
     },
     {
       id: 2,
@@ -42,7 +136,7 @@ export default function Dashboard() {
       progress: 88,
       aiScore: 94,
       views: 89,
-      shares: 8
+      shares: 8,
     },
     {
       id: 3,
@@ -53,8 +147,8 @@ export default function Dashboard() {
       progress: 85,
       aiScore: 92,
       views: 67,
-      shares: 5
-    }
+      shares: 5,
+    },
   ];
 
   const insights = [
@@ -64,7 +158,7 @@ export default function Dashboard() {
       change: "+12%",
       icon: <Brain className="h-5 w-5" />,
       color: "text-custom-medium",
-      bg: "bg-custom-lightest"
+      bg: "bg-custom-lightest",
     },
     {
       title: "Profile Views",
@@ -72,7 +166,7 @@ export default function Dashboard() {
       change: "+28%",
       icon: <Eye className="h-5 w-5" />,
       color: "text-custom-medium",
-      bg: "bg-custom-lightest"
+      bg: "bg-custom-lightest",
     },
     {
       title: "Job Match Rate",
@@ -80,8 +174,8 @@ export default function Dashboard() {
       change: "+15%",
       icon: <Target className="h-5 w-5" />,
       color: "text-custom-medium",
-      bg: "bg-custom-lightest"
-    }
+      bg: "bg-custom-lightest",
+    },
   ];
 
   const renderContent = () => {
@@ -104,7 +198,8 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold">
-                  Welcome back, <span className="text-custom-medium">Thomas</span>
+                  Welcome back,{" "}
+                  <span className="text-custom-medium">Thomas</span>
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">
                   Your documents are performing exceptionally well
@@ -127,9 +222,13 @@ export default function Dashboard() {
                       <div className={insight.color}>{insight.icon}</div>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{insight.title}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {insight.title}
+                      </p>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold">{insight.value}</span>
+                        <span className="text-2xl font-bold">
+                          {insight.value}
+                        </span>
                         <span className="text-sm text-custom-dark bg-custom-lightest/50 px-2 py-0.5 rounded-full">
                           {insight.change}
                         </span>
@@ -144,7 +243,10 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold">Active Documents</h2>
-                <Button variant="outline" className="text-gray-600 border-custom-light hover:bg-custom-lightest">
+                <Button
+                  variant="outline"
+                  className="text-gray-600 border-custom-light hover:bg-custom-lightest"
+                >
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -155,11 +257,15 @@ export default function Dashboard() {
                     key={doc.id}
                     className="group bg-white dark:bg-gray-800 rounded-2xl border border-custom-lightest hover:shadow-lg transition-all duration-300"
                   >
-                    <div className={`h-40 bg-gradient-to-br ${doc.gradient} p-6 relative`}>
+                    <div
+                      className={`h-40 bg-gradient-to-br ${doc.gradient} p-6 relative`}
+                    >
                       <div className="absolute top-4 right-4 flex items-center gap-2">
                         <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-white" />
-                          <span className="text-white text-sm font-medium">{doc.aiScore}</span>
+                          <span className="text-white text-sm font-medium">
+                            {doc.aiScore}
+                          </span>
                         </div>
                         <Button
                           variant="ghost"
@@ -206,32 +312,34 @@ export default function Dashboard() {
                   title: "AI Enhancement",
                   description: "Optimize your CV with AI",
                   icon: <Wand2 className="h-6 w-6" />,
-                  color: "from-custom-light to-custom-medium"
+                  color: "from-custom-light to-custom-medium",
                 },
                 {
                   title: "Job Matching",
                   description: "Find perfect job matches",
                   icon: <Target className="h-6 w-6" />,
-                  color: "from-custom-medium to-custom-dark"
+                  color: "from-custom-medium to-custom-dark",
                 },
                 {
                   title: "Export Options",
                   description: "Download in any format",
                   icon: <Download className="h-6 w-6" />,
-                  color: "from-custom-dark to-custom-darkest"
+                  color: "from-custom-dark to-custom-darkest",
                 },
                 {
                   title: "Team Review",
                   description: "Get feedback from team",
                   icon: <Users className="h-6 w-6" />,
-                  color: "from-custom-medium to-custom-dark"
-                }
+                  color: "from-custom-medium to-custom-dark",
+                },
               ].map((action, i) => (
                 <button
                   key={i}
                   className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-custom-lightest hover:shadow-lg transition-all duration-300 text-left group"
                 >
-                  <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${action.color} p-3 text-white mb-4`}>
+                  <div
+                    className={`h-12 w-12 rounded-xl bg-gradient-to-br ${action.color} p-3 text-white mb-4`}
+                  >
                     {action.icon}
                   </div>
                   <h3 className="font-medium mb-1 group-hover:text-custom-medium transition-colors">
@@ -249,249 +357,161 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-custom-lightest/30">
-      {/* Header */}
-      <div className="sticky top-0 left-0 right-0 bg-custom-medium z-50">
-        <div className="flex items-center justify-between h-16 px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 text-white hover:bg-custom-dark rounded-xl transition-colors"
+    <>
+      {loading ? (
+        <ProjectLoader message="Welcome to CareerEdge" />
+      ) : (
+        <div className="min-h-screen bg-white">
+          {/* Header */}
+          <div className="sticky top-0 left-0 right-0 border z-50 bg-white">
+            <div className="flex items-center justify-between  h-16 px-4 md:px-6">
+              <div className="flex items-center gap-7">
+                <div className="flex items-center">
+                  <div className="bg-white p-2 rounded-xl">
+                    <Brain className="h-6 w-6 text-custom-darker" />
+                  </div>
+                  <span className="font-semibold text-xl text-custom-darker hidden md:block">
+                    {COMPANY_NAME}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="p-2 text-black  rounded-xl transition-colors"
+                >
+                  {sidebarOpen ? (
+                    <ChevronLeft className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
+                </button>
+
+              </div>
+              <div className="flex items-center gap-7">
+                Welcome back, Thomas
+
+
+              </div>
+              <div className="flex items-center gap-5">
+                <button className="relative p-2 bg-custom-darker text-white hover:bg-custom-dark rounded-xl">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-custom-medium"></span>
+                </button>
+                <button className="p-2 text-white bg-custom-darker hover:bg-custom-dark rounded-xl">
+                  <Settings className="h-5 w-5" />
+                </button>
+                <div className="flex items-center gap-3 text-custom-darker">
+                  <div className="hidden md:block text-right ">
+                    <div className="text-sm font-medium ">
+                      Thomas Klein
+                    </div>
+                    <div className="text-x">
+                      Premium Plan
+                    </div>
+                  </div>
+                  <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-custom-medium font-medium">
+                    TK
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Layout */}
+          <div className=" flex">
+            {/* Sidebar */}
+            <aside
+              className={`fixed left-0 bg-white top-16 bottom-0 border transition-all text-sm duration-300 z-40 ${sidebarOpen && "w-60"}`}
             >
-              {sidebarOpen ? (
-                <ChevronLeft className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="bg-white p-2 rounded-xl">
-                <Brain className="h-6 w-6 text-custom-medium" />
-              </div>
-              <span className="font-semibold text-xl text-white hidden md:block">
-                CV<span className="text-custom-lightest">.AI</span>
-              </span>
-            </div>
-          </div>
+              <div className="flex flex-col h-full p-4">
+                <div className="space-y-1">
 
-          <div className="flex-1 max-w-3xl mx-8 hidden lg:block">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-custom-lightest" />
-              <input
-                type="search"
-                placeholder="Search templates, documents, or job matches..."
-                className="w-full pl-12 pr-4 py-2.5 bg-custom-dark/20 text-white placeholder-custom-lightest border border-custom-dark/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-              />
-            </div>
-          </div>
+                  {sidebarMenu.map((item, i) => (
+                    <>
+                      <button
+                        onClick={() => setActiveSection(item.section)}
+                        className={`flex items-center px-4 py-3 text-center gap-3 rounded-xl ${sidebarOpen && "w-full"} ${activeSection === item.section
+                          ? "text-white bg-custom-darker"
+                          : "text-black/80 hover:bg-custom-darker hover:text-white"
+                          }`}
+                      >
+                        {item.icon}
+                        {sidebarOpen && (
+                          <span
+                            className="transition-opacity duration-300"
+                          >
+                            {item.title}
+                          </span>
+                        )}
+                      </button>
+                    </>
+                  ))
+                  }
 
-          <div className="flex items-center gap-5">
-            <button className="relative p-2 text-white hover:bg-custom-dark rounded-xl">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-custom-medium"></span>
-            </button>
-            <button className="p-2 text-white hover:bg-custom-dark rounded-xl">
-              <Settings className="h-5 w-5" />
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="hidden md:block text-right">
-                <div className="text-sm font-medium text-white">Thomas Klein</div>
-                <div className="text-xs text-custom-lightest">Premium Plan</div>
+                </div>
+
+
+
+                {/* Profile Progress */}
+                <div className="mt-auto bg-custom-darker rounded-xl">
+                  {sidebarOpen ? (
+                    <div className="bg-white/10 rounded-2xl p-4">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-custom-medium">
+                          <Gauge className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-white">
+                            Profile Score
+                          </h4>
+                          <p className="text-sm text-custom-lightest">
+                            Almost Perfect!
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between text-sm mb-2">
+                            <span className="text-custom-lightest">
+                              Completion
+                            </span>
+                            <span className="text-white font-medium">92%</span>
+                          </div>
+                          <div className="h-2 bg-custom-dark/50 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-white rounded-full"
+                              style={{ width: "92%" }}
+                            ></div>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-white text-custom-medium hover:bg-custom-lightest">
+                          Complete Profile{" "}
+                          <ArrowUpRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center">
+                      <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-custom-medium">
+                        <Gauge className="h-6 w-6" />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-custom-medium font-medium">
-                TK
+            </aside>
+
+            {/* Main Content */}
+            <main
+              className={`flex-1 transition-all duration-300 mr-6 ${sidebarOpen ? "ml-64" : "ml-24"
+                } py-5`}
+            >
+              <div className={` mx-auto space-y-0 ${sidebarOpen ? "max-w-7xl w-full" : "max-w-full mr-4"}`}>
+                {renderContent()}
               </div>
-            </div>
+            </main>
           </div>
         </div>
-      </div>
-
-      {/* Main Layout */}
-      <div className="pt-16 flex">
-        {/* Sidebar */}
-        <aside
-          className={`fixed left-0 top-16 bottom-0 bg-custom-medium transition-all duration-300 z-40 ${
-            sidebarOpen ? "w-72" : "w-20"
-          }`}
-        >
-          <div className="flex flex-col h-full p-4">
-            <div className="space-y-1">
-              <button
-                onClick={() => setActiveSection("dashboard")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "dashboard"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <Layout className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Dashboard
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveSection("templates")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "templates"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <Layers className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Templates
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveSection("resumes")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "resumes"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <FileText className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Resume Builder
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveSection("smart-resumes")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "smart-resumes"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <Brain className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Smart Resumes
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveSection("analyze-cv")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "analyze-cv"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <FileSearch className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Analyze CV
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveSection("subscription")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl w-full ${
-                  activeSection === "subscription"
-                    ? "text-custom-medium bg-white"
-                    : "text-white hover:bg-custom-dark"
-                }`}
-              >
-                <Crown className="h-5 w-5" />
-                <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                  Subscription
-                </span>
-              </button>
-              {[
-                { icon: <Users className="h-5 w-5" />, label: "Team" },
-                { icon: <Briefcase className="h-5 w-5" />, label: "Job Matches" },
-                { icon: <Globe className="h-5 w-5" />, label: "Portfolio" }
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  className="flex items-center gap-3 text-white hover:bg-custom-dark px-4 py-3 rounded-xl w-full"
-                >
-                  {item.icon}
-                  <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                    {item.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* AI Assistant */}
-            <div className="mt-8">
-              <div className="px-4 mb-4">
-                {sidebarOpen && (
-                  <h3 className="text-sm font-medium text-custom-lightest">AI ASSISTANT</h3>
-                )}
-              </div>
-              <div className="space-y-1">
-                {[
-                  { icon: <Wand2 className="h-5 w-5" />, label: "Enhance CV" },
-                  { icon: <Target className="h-5 w-5" />, label: "Job Targeting" },
-                  { icon: <Rocket className="h-5 w-5" />, label: "Career Path" }
-                ].map((item, i) => (
-                  <button
-                    key={i}
-                    className="flex items-center gap-3 text-white hover:bg-custom-dark px-4 py-3 rounded-xl w-full"
-                  >
-                    {item.icon}
-                    <span className={`transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Profile Progress */}
-            <div className="mt-auto">
-              {sidebarOpen ? (
-                <div className="bg-white/10 rounded-2xl p-4">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-custom-medium">
-                      <Gauge className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-white">Profile Score</h4>
-                      <p className="text-sm text-custom-lightest">
-                        Almost Perfect!
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-custom-lightest">Completion</span>
-                        <span className="text-white font-medium">92%</span>
-                      </div>
-                      <div className="h-2 bg-custom-dark/50 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-white rounded-full"
-                          style={{ width: "92%" }}
-                        ></div>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-white text-custom-medium hover:bg-custom-lightest">
-                      Complete Profile <ArrowUpRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-center">
-                  <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-custom-medium">
-                    <Gauge className="h-6 w-6" />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main
-          className={`flex-1 transition-all duration-300 ${
-            sidebarOpen ? "ml-72" : "ml-20"
-          } p-8`}
-        >
-          <div className="max-w-7xl mx-auto space-y-8">
-            {renderContent()}
-          </div>
-        </main>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

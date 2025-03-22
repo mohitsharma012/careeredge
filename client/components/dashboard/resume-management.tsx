@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CreateResumeDialog } from "@/components/resume-builder/create-resume-dialog";
 import { ResumeBuilderFlow } from "@/components/resume-builder/resume-builder-flow";
+import { ResumePreviewDialog } from "@/components/resume-preview-dialog";
 import {
   Plus,
   Search,
@@ -29,10 +30,30 @@ interface Resume {
   keywords: string[];
 }
 
+// Add this interface to match the one expected by ResumePreviewDialog
+interface SmartResume {
+  id: string;
+  title: string;
+  createdAt: string;
+  matchScore: number;
+  status: "optimizing" | "complete" | "failed";
+  template: string;
+  views: number;
+  downloads: number;
+  thumbnail: string;
+  description: string;
+  keywords: string[];
+  atsScore: number;
+}
+
 export function ResumeManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(true);
+  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
 
   const resumes: Resume[] = [
     {
@@ -73,6 +94,46 @@ export function ResumeManagement() {
   const handleFileUpload = (file: File) => {
     // Handle file upload logic here
     setIsCreateModalOpen(false);
+    setIsBuilderOpen(true);
+  };
+
+  // Add this adapter function to convert Resume to SmartResume
+  const mapResumeToSmartResume = (resume: Resume): SmartResume => {
+    return {
+      id: resume.id,
+      title: resume.name,
+      createdAt: resume.lastModified,
+      matchScore: resume.matchScore,
+      // Map the status values
+      status: resume.status === "complete" 
+        ? "complete" 
+        : resume.status === "review" 
+          ? "optimizing" 
+          : "failed",
+      template: "Modern Professional",
+      views: resume.views,
+      downloads: resume.downloads,
+      thumbnail: resume.thumbnail,
+      description: `${resume.name} optimized for job applications`,
+      keywords: resume.keywords,
+      atsScore: 85, // Default ATS score
+    };
+  };
+
+  // Update the handlePreview function to use the adapter
+  // const handlePreview = (resume: Resume) => {
+  //   setSelectedResume(mapResumeToSmartResume(resume));
+  //   setIsPreviewOpen(true);
+  // };
+
+  const handlePreview = (resume: Resume) => {
+    setSelectedResume(resume);
+    setIsPreviewOpen(true);
+  };
+
+  const handleOptimizeMore = () => {
+    setIsOptimizing(true);
+    // Add optimization logic here
   };
 
   if (isBuilderOpen) {
@@ -82,23 +143,29 @@ export function ResumeManagement() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-custom-medium to-custom-dark rounded-2xl p-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Resume Builder</h1>
-            <p className="text-custom-lightest">Create and manage your professional resumes</p>
+      <div className="bg-custom-darker rounded-2xl p-7">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-white"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-2">Resume Builder</h1>
+              <p className="text-custom-lightest text-sm">Create and manage your professional resumes</p>
+            </div>
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-white text-custom-darker mr-8 hover:bg-white/80"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Create New Resume
+            </Button>
           </div>
-          <Button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-white text-custom-medium hover:bg-custom-lightest"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Create New Resume
-          </Button>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Bar
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-custom-medium" />
         <input
@@ -108,10 +175,10 @@ export function ResumeManagement() {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2 rounded-lg border border-custom-light focus:border-custom-medium outline-none"
         />
-      </div>
+      </div> */}
 
       {/* Resumes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <AnimatePresence mode="popLayout">
           {filteredResumes.map((resume) => (
             <motion.div
@@ -120,7 +187,7 @@ export function ResumeManagement() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="group bg-white rounded-xl border border-custom-lightest overflow-hidden hover:shadow-xl transition-all duration-300"
+              className="group bg-white rounded-xl border border-black/30 shadow-2xl  overflow-hidden hover:shadow-xl transition-all duration-300"
             >
               <div className="aspect-[1/1.4142] relative">
                 <img
@@ -128,17 +195,12 @@ export function ResumeManagement() {
                   alt={resume.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 right-4">
-                  <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
-                    <Star className="h-4 w-4 text-white" />
-                    <span className="text-white text-sm">{resume.matchScore}% Match</span>
-                  </div>
-                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
                     <Button
                       variant="ghost"
                       className="text-white hover:text-white hover:bg-white/20"
+                      onClick={() => handlePreview(resume)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       Preview
@@ -176,6 +238,19 @@ export function ResumeManagement() {
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Preview Dialog */}
+      <ResumePreviewDialog 
+        isPreviewOpen={isPreviewOpen}
+        setIsPreviewOpen={setIsPreviewOpen}
+        selectedResume={selectedResume as unknown as SmartResume}
+        isOptimizing={isOptimizing}
+        handleOptimizeMore={handleOptimizeMore}
+        onSendEmail={() => {
+          setIsPreviewOpen(false);
+          setIsEmailDialogOpen(true);
+        }}
+      />
 
       {/* Create New Resume Dialog */}
       <CreateResumeDialog

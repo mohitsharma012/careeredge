@@ -1,8 +1,13 @@
 export const CUSTOM_BASE_URL = "http://localhost:8000";
-export const BACKEND_BASE_URL = CUSTOM_BASE_URL + `/plutonic-task-api/v1/`;
+export const BACKEND_BASE_URL = CUSTOM_BASE_URL + `/api/v1`;
 
-export const LOGIN = BACKEND_BASE_URL+`users/login/`;
-export const REFRESH_API = BACKEND_BASE_URL+ `token/refresh/`;
+export const LOGIN_API = BACKEND_BASE_URL + `/user/login/`;
+export const REGISTER_API = BACKEND_BASE_URL + `/user/register/`;
+export const USER_CLONE_API = BACKEND_BASE_URL + `/user/user-clone/`;
+export const REFRESH_API = BACKEND_BASE_URL + `/token/refresh/`;
+
+
+// export const REFRESH_API = BACKEND_BASE_URL+ `token/refresh/`;
 export const GET_FILE_UPLOAD_SIGNATURE = BACKEND_BASE_URL+ `uploads/presigned_url/`;
 export const USER_CLONE = BACKEND_BASE_URL+`users/user_clone/`;
 export const EMPLOYEE_URL = BACKEND_BASE_URL+`admin_settings/employee/`;

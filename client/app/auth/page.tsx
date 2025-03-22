@@ -9,58 +9,60 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  Brain,
-  Mail,
-  Lock,
-  AlertCircle,
-  User,
-  Gift,
-  ArrowRight,
-  Loader2,
-} from "lucide-react";
+import { ProjectLoader } from '@/components/loaders/project-loader';
 
-type AuthMode = "login" | "signup";
+import {Brain, Mail, Lock, AlertCircle, User, Gift, ArrowRight, Loader2} from "lucide-react";
+import {postWithOutTokenAPI} from '../../utils/apiRequest';
+import { LOGIN_API, REGISTER_API } from "../../constants/api";
+import toast from 'react-hot-toast';
+import { LOGIN, REGISTER, VERIFY } from "../../constants/constant";
+
+
+
+type AuthMode = typeof LOGIN | typeof REGISTER | typeof VERIFY ;
 type data = {
   email: string;
   password: string;
   name: string;
-  error: string;
   referralCode: string;
 }
 
 export default function AuthPage() {
 
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const is_login = searchParams.get("is_login") === "true";
   const referral_code = searchParams.get("referral_code");
   const [mode, setMode] = useState<AuthMode>();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const [formdata, setFormData] = useState<data>({
     email: "",
     password: "",
     name: "",
-    error: "",
     referralCode: referral_code ? referral_code : "",
   });
 
+
   useEffect(() => {
-    if (is_login) {
-      setMode("login");
-    } else {
-      setMode("signup");
-    }
-  }, [is_login]);
+    const initialize = async () => {
+      if (localStorage.getItem('access')) {
+        await router.push("/dashboard");
+        return;
+      }
+      setLoading(false);
+
+      if (is_login) {
+        setMode(LOGIN);
+      } else {
+        setMode(REGISTER);
+      }
+    };
+
+    initialize();
+  }, [router, is_login]);
+
 
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -69,12 +71,37 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      if (mode === "login") {
-        
-       
-
-        router.push("/dashboard");
+      if (mode === LOGIN) {
+        let successFn = function (result: any) {
+            setLoading(false);
+            toast.success("Login Success");
+            localStorage.setItem("access", result.data.access_token);
+            localStorage.setItem("refresh", result.data.refresh_token);
+            router.push("/dashboard");
+        };    
+        let errorFn = function (error: any) {
+            toast.error(error.detail.message);
+            setLoading(false);
+        };
+    
+        postWithOutTokenAPI(LOGIN_API, formdata, successFn, errorFn);
+      
       } else {
+        let successFn = function (result: any) {
+            setLoading(false);
+            localStorage.setItem("access", result.data.access_token);
+            localStorage.setItem("refresh", result.data.refresh_token);
+            toast.success(result.message);
+            router.push("/dashboard");
+        };
+    
+        let errorFn = function (error: any) {
+            toast.error(error.detail.message);
+            setLoading(false);
+        };
+    
+        postWithOutTokenAPI(REGISTER_API, formdata, successFn, errorFn);
+
         
 
       }
@@ -90,7 +117,13 @@ export default function AuthPage() {
   };
 
   return (
+    <>
+    {loading ? (
+      <ProjectLoader message="Welcome to CareerEdge" />
+
+    ):(
     <div className="min-h-screen bg-gradient-to-br from-custom-lightest via-white to-custom-lightest flex items-center justify-center p-4">
+
       <div className="w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -105,10 +138,10 @@ export default function AuthPage() {
               </Link>
             </div>
             <h1 className="text-2xl font-bold mb-2">
-              {mode === "login" ? "Welcome Back" : "Create Account"}
+              {mode === LOGIN ? "Welcome Back" : "Create Account"}
             </h1>
             <p className="text-gray-600">
-              {mode === "login"
+              {mode === LOGIN
                 ? "Sign in to access your account"
                 : "Join us and create your professional CV"}
             </p>
@@ -130,7 +163,8 @@ export default function AuthPage() {
           {/* Auth Form */}
           <form onSubmit={handleAuth} className="space-y-6">
             <div className="space-y-4">
-              {mode === "signup" && (
+             
+              {mode === REGISTER && (
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
@@ -186,7 +220,7 @@ export default function AuthPage() {
                 </div>
               </div>
             </div>
-            {mode === "signup" && (
+            {mode === REGISTER && (
                 <div>
                   <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 mb-1">
                   Referral Code
@@ -200,13 +234,12 @@ export default function AuthPage() {
                       value={formdata.referralCode}
                       onChange = {(e) => setFormData({...formdata, referralCode: e.target.value})}
                       className="pl-10"
-                      required
                     />
                   </div>
                 </div>
               )}
 
-            {mode === "login" && (
+            {mode === LOGIN && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
@@ -234,7 +267,7 @@ export default function AuthPage() {
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
-              ) : mode === "login" ? (
+              ) : mode === LOGIN ? (
                 "Sign In"
               ) : (
                 "Create Account"
@@ -267,12 +300,12 @@ export default function AuthPage() {
             </Button>
 
             <p className="text-center text-sm text-gray-600">
-              {mode === "login" ? (
+              {mode === LOGIN ? (
                 <>
                   Don&apos;t have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => setMode("signup")}
+                    onClick={() => setMode(REGISTER)}
                     className="text-custom-medium hover:text-custom-dark font-medium"
                   >
                     Sign up
@@ -283,7 +316,7 @@ export default function AuthPage() {
                   Already have an account?{" "}
                   <button
                     type="button"
-                    onClick={() => setMode("login")}
+                    onClick={() => setMode(LOGIN)}
                     className="text-custom-medium hover:text-custom-dark font-medium"
                   >
                     Sign in
@@ -297,5 +330,9 @@ export default function AuthPage() {
 
       
     </div>
+    )}
+
+    </>
+
   );
 }

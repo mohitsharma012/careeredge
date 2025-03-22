@@ -10,6 +10,7 @@ class UserRegisterSerializer(BaseModel):
     name: str 
     email: str
     password: str
+    referral_code: Optional[str] = None
 
     @root_validator(pre=True)
     def validations(cls, values):

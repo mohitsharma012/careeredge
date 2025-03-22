@@ -48,24 +48,24 @@ export function CreateResumeDialog({
       <DialogContent className="sm:max-w-3xl p-0 gap-0 overflow-hidden">
         <div className="relative">
           {/* Background Pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-custom-lightest via-white to-custom-lightest opacity-50" />
-          
+          <div className="absolute inset-0 bg-white/90 " />
+
           {/* Content */}
           <div className="relative p-8">
             <DialogHeader className="mb-8 text-center">
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex justify-center mb-4"
+                className="flex justify-center  text-center mb-4"
               >
-                <div className="bg-custom-medium rounded-2xl p-4">
+                <div className="bg-custom-darker rounded-2xl p-4">
                   <Brain className="h-8 w-8 text-white" />
                 </div>
               </motion.div>
-              <DialogTitle className="text-2xl font-bold mb-2">
+              <DialogTitle className="text-2xl text-center font-bold mb-2">
                 Create New Resume
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-center text-gray-600">
                 Choose how you want to start building your professional resume
               </DialogDescription>
             </DialogHeader>
@@ -82,20 +82,20 @@ export function CreateResumeDialog({
                   onClick={onCreateFromScratch}
                   className="w-full h-full text-left"
                 >
-                  <div className="bg-white rounded-2xl p-6 border-2 border-custom-light hover:border-custom-medium transition-all duration-300">
+                  <div className="bg-custom-darker rounded-2xl p-6 border-2 border-custom-light hover:border-custom-medium transition-all duration-300">
                     <div className="flex items-start gap-4">
                       <div className="bg-custom-lightest rounded-xl p-3">
-                        <Layout className="h-6 w-6 text-custom-medium" />
+                        <Layout className="h-6 w-6 text-custom-darker" />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                      <div className="flex-1 text-white ">
+                        <h3 className="font-medium text-lg mb-1 flex items-center gap-2">
                           Create from Scratch
                           <Sparkles className="h-4 w-4 text-custom-medium" />
                         </h3>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-white/90 mb-4">
                           Start with a professional template and customize every detail
                         </p>
-                        <div className="flex items-center text-sm text-custom-medium">
+                        <div className="flex items-center text-sm text-white  ">
                           <span>Choose template</span>
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </div>
@@ -118,8 +118,8 @@ export function CreateResumeDialog({
                 >
                   <div className="bg-white rounded-2xl p-6 border-2 border-custom-light hover:border-custom-medium transition-all duration-300">
                     <div className="flex items-start gap-4">
-                      <div className="bg-custom-lightest rounded-xl p-3">
-                        <Upload className="h-6 w-6 text-custom-medium" />
+                      <div className="bg-custom-light rounded-xl p-3">
+                        <Upload className="h-6 w-6 text-custom-darker" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg mb-2">

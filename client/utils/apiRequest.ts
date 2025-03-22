@@ -6,6 +6,8 @@ import { AUTH_TOKEN, REFRESH_TOKEN, SUCCESS_MSG_TYPE } from "../constants/dataKe
 import { REFRESH_API, GET_FILE_UPLOAD_SIGNATURE } from "../constants/api";
 import { jwtDecode } from "jwt-decode";
 
+
+
 interface JwtClaims {
   exp: number;
   [key: string]: any;
@@ -74,7 +76,7 @@ export const getAuthToken = async function (): Promise<string | null> {
       lockr.set('refresh', data.refresh);
       lockr.set('access', data.access);
     } catch (error) {
-      handleErrorResponse(error as AxiosError);
+      // handleErrorResponse(error as AxiosError);
     }
   }
 
@@ -214,7 +216,7 @@ export const getAPI = async function (
       successFn(data);
     })
     .catch(function (error: AxiosError) {
-      handleErrorResponse(error);
+      // handleErrorResponse(error);
       errorFn(error);
     });
 };
@@ -283,7 +285,7 @@ export const postWithOutTokenAPI = function (
       successFn(data);
     })
     .catch(function (error: AxiosError) {
-      handleErrorResponse(error);
+      // handleErrorResponse(error);
       if (error.response) {
         errorFn(error.response.data);
       }
