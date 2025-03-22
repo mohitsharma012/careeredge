@@ -31,15 +31,15 @@ export const emptyFn = (): void => {
     title: "Input Fields are Empty!",
     allowOutsideClick: () => {
       const popup = Swal.getPopup();
-      popup.classList.remove("swal2-show");
-      setTimeout(() => {
-        popup.classList.add("animate_animated", "animate_headShake");
-      });
-      setTimeout(() => {
-        popup.classList.remove("animate_animated", "animate_headShake");
-      }, 500);
-      return false;
-    },
+      if (popup) {
+        popup.classList.remove("swal2-show");
+        setTimeout(() => {
+          popup.classList.add("animate_animated", "animate_headShake");
+        });
+      }
+      return true; // Ensure allowOutsideClick returns a boolean
+    }
+    
   });
 };
 
@@ -49,15 +49,15 @@ export const swalFn = (icon: SwalIconType, data: string): void => {
     title: data,
     allowOutsideClick: () => {
       const popup = Swal.getPopup();
-      popup.classList.remove("swal2-show");
-      setTimeout(() => {
-        popup.classList.add("animate_animated", "animate_headShake");
-      });
-      setTimeout(() => {
-        popup.classList.remove("animate_animated", "animate_headShake");
-      }, 500);
-      return false;
-    },
+      if (popup) {
+        popup.classList.remove("swal2-show");
+        setTimeout(() => {
+          popup.classList.add("animate_animated", "animate_headShake");
+        });
+      }
+      return true; // Ensure allowOutsideClick returns a boolean
+    }
+    
   });
 };
 

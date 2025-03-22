@@ -11,8 +11,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
 
-   const [isLoading, setIsLoading] = useState(true);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     // Simulate initial loading
     const timer = setTimeout(() => {
@@ -21,17 +21,13 @@ export default function AuthLayout({
 
     return () => clearTimeout(timer);
   }, []);
-  
+
   return <>
 
-      {isLoading ? (
-        <ProjectLoader message="Welcome to CareerEdge" />
-      ) : (
-        <>
-          <Navbar />
-          {children}
-          <Footer />
-        </>
-      )}
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+    </>
   </>;
 }

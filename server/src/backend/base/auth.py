@@ -41,10 +41,11 @@ def create_refresh_token(data: dict):
 def verify_token(token: str, credentials_exception: HTTPException) -> TokenData:
     try:
         payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
-        email: str = payload.get("sub")
+        print(payload)
+        email: str = payload.get("email")
         if email is None:
             raise credentials_exception
-        return TokenData(email=email)
+        return email
     except Exception as e:
         raise credentials_exception
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TemplateSelection } from "./template-selection";
+import { TemplatesSection } from "@/components/dashboard/templates-section";
 import { ResumeBuilder } from "./resume-builder";
 
 type FlowState = "select-template" | "build-resume";
@@ -43,9 +43,8 @@ export function ResumeBuilderFlow() {
       ) : null;
     default:
       return (
-        <TemplateSelection
-          onBack={handleBack}
-          onSelect={handleTemplateSelect}
+        <TemplatesSection
+          onTemplateSelect={handleTemplateSelect}
         />
       );
   }

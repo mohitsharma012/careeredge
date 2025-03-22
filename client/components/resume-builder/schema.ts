@@ -6,10 +6,10 @@ export const resumeSchema = z.object({
     title: z.string().min(1, "Professional title is required"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(1, "Phone number is required"),
-    location: z.string().min(1, "Location is required"),
+    location: z.string().optional(),
     website: z.string().url("Invalid website URL").optional(),
   }),
-  summary: z.string().min(1, "Professional summary is required"),
+  summary: z.string().optional(),
   experience: z.array(
     z.object({
       company: z.string().min(1, "Company name is required"),
@@ -17,6 +17,7 @@ export const resumeSchema = z.object({
       startDate: z.string().min(1, "Start date is required"),
       endDate: z.string().optional(),
       current: z.boolean(),
+      location: z.string().optional(),
       description: z.string().min(1, "Job description is required"),
       achievements: z.array(z.string()),
     })
@@ -33,9 +34,31 @@ export const resumeSchema = z.object({
   ),
   skills: z.array(
     z.object({
-      name: z.string().min(1, "Skill name is required"),
-      level: z.enum(["Beginner", "Intermediate", "Advanced", "Expert"]),
-      category: z.enum(["Technical", "Soft Skills", "Languages", "Tools"]),
+      name: z.string().min(1, "Skill name is required")
+     
+    })
+  ),
+  certifications: z.array(
+    z.object({
+      name: z.string().min(1, "Certification name is required"),
+      authority: z.string().min(1, "Certification authority is required"),
+      startDate: z.string().min(1, "Start date is required"),
+      endDate: z.string().min(1, "End date is required"),
+      url: z.string().optional(),
+    })
+  ),
+  projects: z.array(
+    z.object({
+      name: z.string().min(1, "Project name is required"),
+      description: z.string().min(1, "Project description is required"),
+      startDate: z.string().min(1, "Start date is required"),
+      endDate: z.string().optional(),
+      current: z.boolean(),
+    })
+  ),
+  achievements: z.array(
+    z.object({
+      title: z.string().min(1, "Achievement title is required"),
     })
   ),
 });

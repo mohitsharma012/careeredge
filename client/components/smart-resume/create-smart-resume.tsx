@@ -21,12 +21,29 @@ import {
   Download,
   Wand2,
 } from "lucide-react";
+import { ResumePreviewDialog } from "@/components/resume-preview-dialog";
 
 interface Resume {
   id: string;
   title: string;
   thumbnail: string;
   lastModified: string;
+}
+
+// Add interface to match what the ResumePreviewDialog expects
+interface SmartResume {
+  id: string;
+  title: string;
+  createdAt: string;
+  matchScore: number;
+  status: "optimizing" | "complete" | "failed";
+  template: string;
+  views: number;
+  downloads: number;
+  thumbnail: string;
+  description: string;
+  keywords: string[];
+  atsScore: number;
 }
 
 interface CreateSmartResumeProps {
@@ -39,6 +56,8 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedPreviewId, setSelectedPreviewId] = useState<string | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
 
   // Mock data for available resumes
   const availableResumes: Resume[] = [
@@ -61,6 +80,38 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
     setIsPreviewOpen(true);
   };
 
+  const handleOptimizeMore = () => {
+    setIsOptimizing(true);
+    // Simulate optimization process
+    setTimeout(() => {
+      setIsOptimizing(false);
+    }, 2000);
+  };
+
+  // Find the resume object based on the selected ID
+  const getSelectedResumeForPreview = (): SmartResume | null => {
+    if (!selectedPreviewId) return null;
+    
+    const resume = availableResumes.find(r => r.id === selectedPreviewId);
+    if (!resume) return null;
+    
+    // Map to the format expected by ResumePreviewDialog
+    return {
+      id: resume.id,
+      title: resume.title,
+      createdAt: resume.lastModified,
+      matchScore: 85, // Default values
+      status: "complete",
+      template: "Professional",
+      views: 0,
+      downloads: 0,
+      thumbnail: resume.thumbnail,
+      description: `${resume.title} for job applications`,
+      keywords: ["Professional", "Modern", "Clean"], // Default keywords
+      atsScore: 80
+    };
+  };
+
   const handleGenerateClick = () => {
     if (!selectedResume || !jobDescription) return;
     onGenerate();
@@ -68,9 +119,9 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
 
   return (
     <div className="min-h-screen bg-custom-lightest/30">
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
+      <div className="max-w-7xl mx-auto ">
         {/* Header */}
-        <div className="bg-gradient-to-r from-custom-medium to-custom-dark rounded-2xl p-8">
+        <div className="bg-custom-darker rounded-2xl p-7">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -81,8 +132,8 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Create Smart Resume</h1>
-              <p className="text-custom-lightest">
+              <h1 className="text-2xl font-bold text-white mb-2">Create Smart Resume</h1>
+              <p className="text-custom-lightest text-sm">
                 Let AI optimize your resume for the specific job
               </p>
             </div>
@@ -116,7 +167,7 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
                     key={resume.id}
                     className={`relative rounded-xl border-2 transition-all cursor-pointer ${
                       selectedResume === resume.id
-                        ? "border-custom-medium bg-custom-lightest"
+                        ? "border-custom-medium bg-custom-light/30"
                         : "border-custom-light hover:border-custom-medium"
                     }`}
                     onClick={() => setSelectedResume(resume.id)}
@@ -133,13 +184,13 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
                         <h3 className="font-medium mb-2">{resume.title}</h3>
                         <div className="flex items-center gap-2 text-sm text-gray-500">
                           <Clock className="h-4 w-4" />
-                          <span>Modified {resume.lastModified}</span>
+                          <span>Created {resume.lastModified}</span>
                         </div>
                         <div className="flex gap-2 mt-4">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-custom-medium border-custom-light"
+                            className="text-custom-darker border-custom-darker"
                             onClick={(e) => {
                               e.stopPropagation();
                               handlePreview(resume.id);
@@ -148,18 +199,11 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
                             <Eye className="h-4 w-4 mr-2" />
                             Preview
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-custom-medium border-custom-light"
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
+                        
                         </div>
                       </div>
                       {selectedResume === resume.id && (
-                        <CheckCircle className="absolute top-4 right-4 h-5 w-5 text-custom-medium" />
+                        <CheckCircle className="absolute top-4 right-4 h-5 w-5 text-custom-moreDarker" />
                       )}
                     </div>
                   </div>
@@ -179,31 +223,18 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
         </div>
 
         {/* Preview Dialog */}
-        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Resume Preview</DialogTitle>
-            </DialogHeader>
-            <div className="aspect-[1/1.4142] bg-white rounded-lg overflow-hidden">
-              {selectedPreviewId && (
-                <img
-                  src={availableResumes.find(r => r.id === selectedPreviewId)?.thumbnail}
-                  alt="Resume Preview"
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
-                Close
-              </Button>
-              <Button className="bg-custom-medium hover:bg-custom-dark">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ResumePreviewDialog 
+          isPreviewOpen={isPreviewOpen}
+          setIsPreviewOpen={setIsPreviewOpen}
+          selectedResume={getSelectedResumeForPreview()}
+          isOptimizing={isOptimizing}
+          handleOptimizeMore={handleOptimizeMore}
+          onSendEmail={() => {
+            setIsPreviewOpen(false);
+            setIsEmailDialogOpen(true);
+          }}
+        />
+        
       </div>
     </div>
   );

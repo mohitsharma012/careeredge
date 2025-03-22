@@ -1,5 +1,5 @@
 import { Brain } from 'lucide-react';
-import { COMPANY_NAME } from "@/lib/constants";
+import { COMPANY_NAME } from "@/constants/constant";
 import Link from 'next/link';
 
 

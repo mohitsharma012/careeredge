@@ -28,6 +28,42 @@ const templates = [
     description: "Simple and elegant design focusing on content",
     thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
   },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Simple and elegant design focusing on content",
+    thumbnail: "https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=200&q=80",
+  },
 ];
 
 export function ResumeTemplateSelector({
@@ -35,7 +71,7 @@ export function ResumeTemplateSelector({
   onTemplateChange,
 }: ResumeTemplateSelectorProps) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 bg-white">
       {templates.map((template) => (
         <motion.div
           key={template.id}
@@ -58,7 +94,7 @@ export function ResumeTemplateSelector({
           </div>
           {selectedTemplate === template.id && (
             <div className="absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full">
-              <Check className="h-4 w-4" />
+              <Check className="h-6 w-6" />
             </div>
           )}
         </motion.div>

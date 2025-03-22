@@ -1,12 +1,13 @@
 from fastapi import APIRouter
 # from .billing.routes import plan_router
 # from .subscription.routes import subscription_plan_router, subscription_router
-from .accounts.routes import account_router
+from .accounts.routes import account_router, token_router
 # from .accounts.google_auth import google_router
 
 
 app_router = APIRouter()
 app_router.include_router(account_router, prefix="/user", tags=["user"])
+app_router.include_router(token_router, prefix="/token", tags=["Token"])
 # app_router.include_router(google_router, prefix="/google", tags=["Google Auth"])
 
 
