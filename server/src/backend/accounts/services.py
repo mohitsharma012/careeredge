@@ -18,7 +18,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_current_user(request: Request, api_key: str = Security(api_key_header)):
     token = request.headers.get("Authorization")
     if not token:
-        return response.BadRequest("Token not found")
+        raise response.BadRequest("Token not found")
     parts = token.split(" ")
     if len(parts) != 2 or parts[0].lower() != "bearer":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authorization header format")
@@ -43,6 +43,26 @@ def referral_code_generator(name:str):
     """Generate a referral code."""
     first_name = name.split(" ")[0]
     return first_name[:3].upper() + str(random.randint(1000, 9999))
+
+
+def generate_verification_link(email: str, code: str) -> str:
+    """Generate a verification link."""
+    return f"{Config.FRONTEND_URL}/verify-email?email={email}&code={code}"
+
+def generate_forgot_password_link(email: str, code: str) -> str:
+    """Generate a forgot password link."""
+    return f"{Config.FRONTEND_URL}/reset-password?email={email}&code={code}"
+
+
+
+
+
+
+
+
+
+
+
 
 
 

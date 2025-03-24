@@ -8,6 +8,12 @@ def generate_otp(length=8):
     otp = ''.join(random.choice(characters) for _ in range(length))
     return "123456"
 
+def generate_random_string(length=8):
+    """Generate a random string of given length."""
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
+
 def password_hash(password: str):
     """Hash the given password."""
     return password
