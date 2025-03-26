@@ -10,7 +10,7 @@ from fastapi.security import APIKeyHeader
 from ..config.config import Config
 from ..accounts.constants import REFRESH_TOKEN_EXPIRE_DAYS, ACCESS_TOKEN_EXPIRE_MINUTES
 
-api_key_header = APIKeyHeader(name="token", auto_error=False)
+api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 
 class TokenData(BaseModel):
     email: str | None = None
@@ -41,7 +41,6 @@ def create_refresh_token(data: dict):
 def verify_token(token: str, credentials_exception: HTTPException) -> TokenData:
     try:
         payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
-        print(payload)
         email: str = payload.get("email")
         if email is None:
             raise credentials_exception

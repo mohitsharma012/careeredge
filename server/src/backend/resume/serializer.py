@@ -52,13 +52,13 @@ class UserLoginSerializer(BaseModel):
     
 class UserAccountVerifySerializer(BaseModel):
     email: str
-    code: str
+    otp: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "email": "test@gmail.com",
-                "code": "xcvbnmdsf"
+                "otp": "123456"
             }
         }
     }
@@ -74,20 +74,6 @@ class UserEmailSerializer(BaseModel):
         }
     }
     
-class UserRestPasswordSerializer(BaseModel):
-    email: str
-    code: str
-    password: str
-
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "email": "test@gmail.com",
-                "code": "xcvbnmdsf",
-                "password": "password"
-            }
-        }
-    }
 
 
 
