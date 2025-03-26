@@ -89,6 +89,28 @@ class UserRestPasswordSerializer(BaseModel):
         }
     }
 
+from ..subscription.serializer import SubscriptionPlanSerializer
+
+class CurrentPlanSerializer(BaseModel):
+    id: Optional[int] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    plan: Optional[SubscriptionPlanSerializer] = None
+
+    class Config:
+        from_attributes = True
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class ProductVariantSerializer(BaseModel):
@@ -124,3 +146,5 @@ class ProductResponseSerializer(BaseModel):
     products_list: Optional[List[ProductSerializer]] = None
     total_products: Optional[int] = None
     hm: Optional[bool] = None
+
+

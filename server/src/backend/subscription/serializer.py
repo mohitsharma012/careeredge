@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
 from .constants import MONTHLY, YEARLY
+from datetime import datetime
 
 
 
@@ -27,4 +28,16 @@ class SubscriptionPlanSerializer(BaseModel):
 class SubscriptionPlanUpdateSerializer(SubscriptionPlanSerializer):
     id : int
 
+class SubscriptionCreateSerializer(BaseModel):
+    plan_id: int
+    user_id: int
+    start_date: Optional[str] = datetime.utcnow()
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "plan_id": 1,
+                "user_id": 1
+            }
+        }
 

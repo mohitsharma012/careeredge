@@ -5,6 +5,7 @@ from .accounts.routes import account_router
 from .resume.routes import resume_router
 from .subscription.routes import subscription_plan_router, subscription_router
 
+
 from .accounts.routes import account_router, token_router
 # from .accounts.google_auth import google_router
 

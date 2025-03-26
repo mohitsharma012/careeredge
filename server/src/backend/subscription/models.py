@@ -21,7 +21,9 @@ class SubscriptionPlan(TimeStampedModel):
     is_active = Column(Boolean, default=True)
 
     subscriptions = relationship("Subscription", back_populates="plan")  # Corrected relationship
-    users = relationship("User", back_populates="plan")
+    users = relationship("User", back_populates="current_plan")
+
+
 
 class Subscription(TimeStampedModel):
     __tablename__ = "subscriptions"
@@ -43,5 +45,6 @@ class TrialPeriodExtension(TimeStampedModel):
     reason = Column(String, nullable=True)
 
     subscription = relationship("Subscription", back_populates="trial_period_extensions")  # Corrected relationship
+
 
 

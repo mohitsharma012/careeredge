@@ -12,30 +12,9 @@ from ..config.db import get_db
 from ..base.auth import  create_access_token, create_refresh_token, verify_token
 from ..base import response
 
-# @token_router.get("/refresh-token", status_code=status.HTTP_200_OK)
-# async def refresh_token(refresh_token: str):
-#     payload = verify_token(refresh_token, HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token"))
-#     if not payload:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
-#     new_access_token = create_access_token({"shop_url": payload.shop_url, "shopifyToken": payload.shopifyToken})
-#     return {"access_token": new_access_token, "token_type": "bearer"}
-
-# @shop_router.get("/token", status_code=status.HTTP_200_OK)
-# async def get_token(shop_url: str, shopify_token: str):
-#     # Register webhook
-#     # try:
-#     #     register_webhook(shop_url, shopify_token)
-#     # except Exception as e:
-#     #     return JSONResponse(content={"error": str(e)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#     try:
-#         print("mohit")        
-#         token = create_access_token(data={"shop_url": shop_url, "shopifyToken": shopify_token})
-#         return JSONResponse(content={"shop": shop_url, "token": token}, status_code=status.HTTP_200_OK)
-#     except Exception as e:
-#         return JSONResponse(content={"error": str(e)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-from .serializer import UserRegisterSerializer, UserLoginSerializer, UserAccountVerifySerializer, UserEmailSerializer, UserRestPasswordSerializer
+from .serializer import CurrentPlanSerializer, UserRegisterSerializer, UserLoginSerializer, UserAccountVerifySerializer, UserEmailSerializer, UserRestPasswordSerializer
 from .services import get_current_user, hash_password, referral_code_generator, verify_password, generate_verification_link, generate_forgot_password_link
 from ..base.services import generate_otp, generate_random_string
 from .models import User, Referral, VerificationCode
@@ -44,7 +23,7 @@ from datetime import datetime
 import openai 
 
 openai_api_key = "test-key"
-from ..subscription.models import SubscriptionPlan
+from ..subscription.models import SubscriptionPlan, Subscription, TrialPeriodExtension
 from .constants import EMAIL_VERIFICATION, FORGOT_PASSWORD
 
 
@@ -113,8 +92,19 @@ async def user_clone(
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise response.BadRequest("Invalid credentials")
-    current_plan = db.query(SubscriptionPlan).filter(SubscriptionPlan.id == user.current_plan_id).first() if user.current_plan_id else None
-    return response.Ok("User found", {"email": user.email, "name": user.name, "current_plan": current_plan, "is_verified": user.is_verified})
+    current_plan = db.query(Subscription).filter(Subscription.user_id == user.id).join(SubscriptionPlan).order_by(Subscription.start_date.desc()).first()
+    serialized_plan = None
+    if current_plan:
+        serialized_plan = {
+            "id": current_plan.plan.id if current_plan.plan else None,
+            "name": current_plan.plan.name if current_plan.plan else None,
+            "price": current_plan.plan.price if current_plan.plan else None,
+            "interval": current_plan.plan.interval if current_plan.plan else None,
+            "start_date": current_plan.start_date.isoformat() if current_plan.start_date else None,
+            "end_date": current_plan.end_date.isoformat() if current_plan.end_date else None,
+            "is_expired": True if current_plan.end_date and current_plan.end_date < datetime.utcnow() else False,
+        }            
+    return response.Ok("User found", {"id": user.id, "email": user.email, "name": user.name, "current_plan": serialized_plan, "is_verified": user.is_verified})
 
 
 class refresh_token(BaseModel):
@@ -132,12 +122,12 @@ async def refresh(refresh_token: refresh_token):
     return response.Ok("Token refreshed", {"access_token": new_access_token, "refresh_token": new_refresh_token})
 
 
-@account_router.get("/user-clone")
-async def user_clone(
-    db: Session = Depends(get_db),
-    email: str = Depends(get_current_user)
+@account_router.post("/verify-account")
+async def verify_account(
+    request_data: UserAccountVerifySerializer, 
+    db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.email == request_data.email).first()
     if not user:
         raise response.BadRequest("Invalid credentials")
     if user.is_verified:
@@ -148,28 +138,7 @@ async def user_clone(
     user.is_verified = True
     db.commit()
     return response.Ok("Account verified successfully")
-
-
-    return response.Ok("User found", {"email": user.email, "name": user.name})
-
-# @account_router.post("/verify-account")
-# async def verify_account(
-#     request_data: UserAccountVerifySerializer, 
-#     db: Session = Depends(get_db)
-# ):
-#     user = db.query(User).filter(User.email == request_data.email).first()
-#     if not user:
-#         raise response.BadRequest("No user found")
-#     if user.is_verified:
-#         raise response.BadRequest("User already verified")
-#     otp = db.query(Otp).filter(Otp.user_id == user.id, Otp.otp == request_data.otp).first()
-#     if not otp:
-#         raise response.BadRequest("Invalid OTP")
-#     if otp.expires_at < datetime.utcnow():
-#         raise response.BadRequest("OTP expired")
-#     user.is_verified = True
-#     db.commit()
-#     return response.Ok("Account verified successfully")
+    
 
 @account_router.post("/forgot-password")
 async def forgot_password(
@@ -217,21 +186,3 @@ async def reset_password(
 
 
 
-    
-
-
-# @account_router.post("/verify-account")
-# async def verify_account(
-#     request_data: UserAccountVerifySerializer, 
-#     db: Session = Depends(get_db),
-#     email: Session = Depends(get_current_user)
-# ):
-#     try:
-#         user = db.query(User).filter(User.email == email, is_verified = False).first()
-#         if not user:
-#             return response.BadRequest("Invalid Token")
-#         user.is_verified = True
-#         db.commit()
-#         return response.Ok("Account verified successfully")
-#     except Exception as e:
-#         return response.BadRequest("Internal server error")
