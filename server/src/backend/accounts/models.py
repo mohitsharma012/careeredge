@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from ..config.db import Base
 from ..base.models import TimeStampedModel
@@ -32,6 +32,7 @@ class Otp(TimeStampedModel):
     subscriptions = relationship("Subscription", back_populates="user")
     verification_codes = relationship("VerificationCode", back_populates="user")
 
+
 class Referral(TimeStampedModel):
     __tablename__ = "referral"
 
@@ -51,3 +52,4 @@ class VerificationCode(TimeStampedModel):
     used_for = Column(String, nullable=True)
 
     user = relationship("User", back_populates="verification_codes")
+

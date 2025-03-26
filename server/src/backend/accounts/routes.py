@@ -39,6 +39,7 @@ from .serializer import UserRegisterSerializer, UserLoginSerializer, UserAccount
 from .services import get_current_user, hash_password, referral_code_generator, verify_password, generate_verification_link, generate_forgot_password_link
 from ..base.services import generate_otp, generate_random_string
 from .models import User, Referral, VerificationCode
+
 from datetime import datetime
 import openai 
 
@@ -74,6 +75,7 @@ async def register(request_data: UserRegisterSerializer, db: Session = Depends(g
     link = generate_verification_link(verification_code.code, user.email)
     # Send verification email
     # send_verification_email(user.email, verification_code.code)
+
     
     return response.Ok("Verification email sent", {"access_token": access_token, "refresh_token": refresh_token})
 
@@ -115,12 +117,27 @@ async def user_clone(
     return response.Ok("User found", {"email": user.email, "name": user.name, "current_plan": current_plan, "is_verified": user.is_verified})
 
 
-@account_router.post("/verify-account")
-async def verify_account(
-    request_data: UserAccountVerifySerializer, 
-    db: Session = Depends(get_db)
+class refresh_token(BaseModel):
+    refresh: str
+
+@token_router.post("/refresh")
+async def refresh(refresh_token: refresh_token):
+    email = verify_token(refresh_token, response.BadRequest("Invalid refresh token"))
+
+    if not email:
+        raise response.BadRequest("Invalid refresh token")
+    new_access_token = create_access_token({"email": email})
+    new_refresh_token = create_refresh_token({"email": email})
+
+    return response.Ok("Token refreshed", {"access_token": new_access_token, "refresh_token": new_refresh_token})
+
+
+@account_router.get("/user-clone")
+async def user_clone(
+    db: Session = Depends(get_db),
+    email: str = Depends(get_current_user)
 ):
-    user = db.query(User).filter(User.email == request_data.email).first()
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         raise response.BadRequest("Invalid credentials")
     if user.is_verified:
@@ -132,6 +149,27 @@ async def verify_account(
     db.commit()
     return response.Ok("Account verified successfully")
 
+
+    return response.Ok("User found", {"email": user.email, "name": user.name})
+
+# @account_router.post("/verify-account")
+# async def verify_account(
+#     request_data: UserAccountVerifySerializer, 
+#     db: Session = Depends(get_db)
+# ):
+#     user = db.query(User).filter(User.email == request_data.email).first()
+#     if not user:
+#         raise response.BadRequest("No user found")
+#     if user.is_verified:
+#         raise response.BadRequest("User already verified")
+#     otp = db.query(Otp).filter(Otp.user_id == user.id, Otp.otp == request_data.otp).first()
+#     if not otp:
+#         raise response.BadRequest("Invalid OTP")
+#     if otp.expires_at < datetime.utcnow():
+#         raise response.BadRequest("OTP expired")
+#     user.is_verified = True
+#     db.commit()
+#     return response.Ok("Account verified successfully")
 
 @account_router.post("/forgot-password")
 async def forgot_password(
@@ -175,8 +213,6 @@ async def reset_password(
     user.password = hash_password(request_data.password)
     db.commit()
     return response.Ok("Password reset successfully")
-
-
 
 
 

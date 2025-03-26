@@ -56,22 +56,6 @@ def generate_forgot_password_link(email: str, code: str) -> str:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async def get_shopify_session(request: Request, api_key: str = Security(api_key_header)):
     token = request.headers.get("Authorization")
     if not token:
