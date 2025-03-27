@@ -87,11 +87,9 @@ async def refresh(refresh_token: refresh_token):
 @account_router.get("/user-clone")
 async def user_clone(
     db: Session = Depends(get_db),
-    email: str = Depends(get_current_user)
+    user: User = Depends(get_current_user)
 ):
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise response.BadRequest("Invalid credentials")
+    
     current_plan = db.query(Subscription).filter(Subscription.user_id == user.id).join(SubscriptionPlan).order_by(Subscription.start_date.desc()).first()
     serialized_plan = None
     if current_plan:

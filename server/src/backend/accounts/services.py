@@ -10,12 +10,15 @@ from .constants import API_VERSION
 from ..base.auth import verify_token
 from ..config.config import Config
 from ..base import response
+from ..config.db import get_db
+from sqlalchemy.orm import Session
+from ..accounts.models import User
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     
-def get_current_user(request: Request, api_key: str = Security(api_key_header)):
+def get_current_user(request: Request, api_key: str = Security(api_key_header), db: Session = Depends(get_db)):
     token = request.headers.get("Authorization")
     if not token:
         raise response.BadRequest("Token not found")
@@ -24,7 +27,11 @@ def get_current_user(request: Request, api_key: str = Security(api_key_header)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authorization header format")
     token = parts[1]
     try:
-        return verify_token(token, response.BadRequest("Invalid token"))
+        email = verify_token(token, response.BadRequest("Invalid token"))
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise response.BadRequest("User not found")
+        return user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
