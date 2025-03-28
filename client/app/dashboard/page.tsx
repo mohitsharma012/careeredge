@@ -80,13 +80,18 @@ export default function Dashboard() {
       return;
     } else {
       let successFn = (result: any) => {
+        if (!result.data.current_plan){
+          router.push("/pricing");
+          return
+          
+        }
         setLoading(false);
       };
       let errorFn = (result: any) => {
         // Delete the token and redirect to login
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
-        router.push("/auth");
+        router.push("/auth/login");
       };
 
       getAPI(USER_CLONE_API, successFn, errorFn);

@@ -21,12 +21,8 @@ type data = {
 
 export default function Login() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-
-    const referral_code = searchParams.get("referral_code");
 
 
     const [formdata, setFormData] = useState<data>({
@@ -35,14 +31,12 @@ export default function Login() {
     });
 
     useEffect(() => {
-        const initialize = async () => {
-            if (localStorage.getItem('access')) {
-                await router.push("/dashboard");
-                return;
-            }
-        };
+        if (localStorage.getItem('access')) {
+            router.push("/dashboard");
+            return;
+        }
 
-        initialize();
+        setLoading(false);
     }, [router]);
 
 
@@ -60,7 +54,6 @@ export default function Login() {
             };
 
             let errorFn = function (error: any) {
-                toast.error(error)
                 toast.error(error.detail.message);
             };
 
@@ -69,7 +62,6 @@ export default function Login() {
 
 
         } catch (error: any) {
-            console.log(error);
             toast.error(error.message);
             setLoading(false);
         }
@@ -82,6 +74,9 @@ export default function Login() {
 
     return (
         <>
+        {loading ? (
+        <ProjectLoader message="Welcome to CareerEdge" />
+      ) : (
             <section className="bg-white max-h-screen">
                 <div className="flex w-full min-h-screen">
                     <div className="flex items-center my-auto w-full md:w-1/2 justify-center px-8  bg-white sm:px-6 lg:px-8">
@@ -91,26 +86,14 @@ export default function Login() {
                                 <Link href={"/"} className="flex items-center gap-2 w-fit mx-auto mb-2 ">
                                     <Image src={logoSvg} alt="Logo" width={150} />
                                 </Link>
-                                <h2 className="text-3xl  font-roboto leading-tight text-black">Create an account</h2>
-                                <p className="mt-2 text-sm text-gray-600">Already have an account? <Link href="/login" className="font-medium text-custom-darker">Login</Link>
+                                <h2 className="text-3xl  font-roboto leading-tight text-black">Welcome Back to CareerEdge</h2>
+                                <p className="mt-2 text-sm text-gray-600">Don't have an account? <Link href="/auth/signup" className="font-medium text-custom-darker">Signup</Link>
                                 </p>
                             </div>
 
                             <form className="mt-5" onSubmit={handleAuth}>
                                 <div className="space-y-3">
-                                    <div>
-                                        <label className="text-sm font-roboto text-gray-700"> Full Name </label>
-                                        <div className="mt-2.5">
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                value={formdata.name}
-
-                                                onChange={(e) => setFormData({ ...formdata, name: e.target.value })} placeholder="Enter your full name"
-                                                className="block w-full py-2 text-sm px-4 text-black placeholder-gray-500 transition-all duration-200 border border-gray-200 rounded-md bg-gray-50 focus:outline-none focus:border-blue-600 focus:bg-white caret-blue-600"
-                                            />
-                                        </div>
-                                    </div>
+                                    
 
                                     <div>
                                         <label className="text-sm font-roboto text-gray-700"> Email address </label>
@@ -145,9 +128,9 @@ export default function Login() {
                                     <div>
                                         <button type="submit" className="inline-flex items-center justify-center w-full px-4 py-3 mt-5 text-sm  text-white/90 transition-all duration-200 bg-custom-darker font-roboto rounded-xl focus:outline-none hover:bg-custom-darker/90 focus:bg-blue-700">
                                             {loading ? (
-                                                "Creating account..."
+                                                "Login in..."
 
-                                            ) : ("Create free account")}
+                                            ) : ("Login")}
                                         </button>
                                     </div>
                                 </div>
@@ -193,6 +176,7 @@ export default function Login() {
                     </div>
                 </div>
             </section>
+        )}
         </>
 
 
