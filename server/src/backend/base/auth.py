@@ -49,11 +49,4 @@ def verify_token(token: str, credentials_exception: HTTPException) -> TokenData:
         raise credentials_exception
 
 
-async def get_current_user(token: Annotated[str, Depends(api_key_header)]) -> TokenData:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    return verify_token(token, credentials_exception) 
 

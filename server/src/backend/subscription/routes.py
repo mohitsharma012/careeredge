@@ -25,11 +25,10 @@ subscription_router = APIRouter()
 @subscription_plan_router.post("/")
 async def create_subscription_plan(
     request_data: SubscriptionPlanSerializer,
-    email: str = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Check if the user is an admin
-    user = db.query(User).filter(User.email == email).first()
+    # Check if the user is an admin    
     if not user or not user.is_superuser:
         raise response.BadRequest("You are not authorized to create a subscription plan")
     plan = SubscriptionPlan(
@@ -58,11 +57,10 @@ async def get_subscription_plans(
 @subscription_plan_router.put("/")
 async def update_subscription_plan(
     request_data: SubscriptionPlanUpdateSerializer,
-    email: str = Depends(get_current_user),
+    user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Check if the user is an admin
-    user = db.query(User).filter(User.email == email).first()
+    
     if not user or not user.is_superuser:
         raise response.BadRequest("You are not authorized to update a subscription plan")
     
@@ -119,12 +117,8 @@ async def create_subscription(
 @subscription_router.get("/")
 async def get_subscriptions(
     db: Session = Depends(get_db),
-    email: str = Depends(get_current_user)
+    user: User = Depends(get_current_user)
 ):
-    # Check if the user exists
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise response.BadRequest("User does not exist")
     if user.is_superuser:
         # If the user is an admin, get all subscriptions
         subscriptions = db.query(Subscription).options(joinedload(Subscription.plan)).all()

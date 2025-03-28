@@ -6,7 +6,6 @@ from ..base.models import TimeStampedModel
 class Resume(TimeStampedModel):
     __tablename__ = 'resumes'
 
-    id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
@@ -28,7 +27,6 @@ class Resume(TimeStampedModel):
 class Experience(TimeStampedModel):
     __tablename__ = 'experiences'
 
-    id = Column(Integer, primary_key=True, index=True)
     resume_id = Column(Integer, ForeignKey('resumes.id'), nullable=False)
     job_title = Column(String, nullable=False)
     organization = Column(String, nullable=False)
@@ -42,7 +40,6 @@ class Experience(TimeStampedModel):
 class Education(TimeStampedModel):
     __tablename__ = 'educations'
 
-    id = Column(Integer, primary_key=True, index=True)
     resume_id = Column(Integer, ForeignKey('resumes.id'), nullable=False)
     degree = Column(String, nullable=False)
     institution = Column(String, nullable=False)
@@ -56,11 +53,9 @@ class Education(TimeStampedModel):
 class Certification(TimeStampedModel):
     __tablename__ = 'certifications'
 
-    id = Column(Integer, primary_key=True, index=True)
     resume_id = Column(Integer, ForeignKey('resumes.id'), nullable=False)
     certification_name = Column(String, nullable=False)
     issuing_organization = Column(String, nullable=False)
     issue_date = Column(String, nullable=True)
-    expiration_date = Column(String, nullable=True)
 
     resume = relationship("Resume", back_populates="certifications")
