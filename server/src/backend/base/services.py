@@ -18,38 +18,56 @@ def password_hash(password: str):
     """Hash the given password."""
     return password
 
+from ..config.config import Config
+from jinja2 import Environment, FileSystemLoader
+from email.message import EmailMessage
+import aiosmtplib
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import os
 
-def send_email(sender_email, receiver_email, subject, message, password, smtp_server="smtp.gmail.com", port=587):
-    """Send an email using the given SMTP server."""
+# Get the directory of the current script (send_otp.py)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Set up Jinja2 environment to load templates from "templates/" in the same directory
+template_env = Environment(loader=FileSystemLoader(os.path.join(BASE_DIR, "templates")))
+
+
+async def send_email(to_email: str, subject: str, template_name: str, template_data: dict):
+    """
+    Sends an email using a Jinja2 template.
+
+    :param to_email: Recipient email address
+    :param subject: Email subject
+    :param template_name: Jinja2 template filename (inside templates/)
+    :param template_data: Data dictionary to render in template
+    """
     try:
-        # Create a multipart message
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = receiver_email
-        msg['Subject'] = subject
+
         
-        # Add message body
-        msg.attach(MIMEText(message, 'plain'))
-        
-        # Create SMTP session
-        server = smtplib.SMTP(smtp_server, port)
-        server.starttls()  # Secure the connection
-        
-        # Login to sender email
-        server.login(sender_email, password)
-        
-        # Send email
-        server.send_message(msg)
-        
-        # Terminate the session
-        server.quit()
-        
+
+        # Load and render the email template
+        template = template_env.get_template(template_name)
+        email_body = template.render(template_data)
+
+        # Create email message
+        message = EmailMessage()
+        message["From"] = Config.SMTP_EMAIL
+        message["To"] = to_email
+        message["Subject"] = subject
+        message.set_content(email_body, subtype="html")  # Send as HTML
+
+        # Send email via SMTP
+        await aiosmtplib.send(
+            message,
+            hostname=Config.SMTP_SERVER,
+            port=Config.SMTP_PORT,
+            username=Config.SMTP_EMAIL,
+            password=Config.SMTP_PASSWORD,
+            start_tls=True,
+        )
+        print(f"✅ Email sent successfully to {to_email}")
         return True
-    
+
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"❌ Failed to send email: {e}")
         return False

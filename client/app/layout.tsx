@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <>
     <Toaster
-      position="top-right"
+      position="bottom-right"
       reverseOrder={true}
     />
     <html lang="en" suppressHydrationWarning className={roboto.variable}>

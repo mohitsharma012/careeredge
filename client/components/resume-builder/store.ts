@@ -23,6 +23,9 @@ const initialResumeData: ResumeData = {
   experience: [],
   education: [],
   skills: [],
+  certifications: [],
+  projects: [],
+  achievements: [],
 };
 
 export const useResumeStore = create<ResumeStore>((set) => ({

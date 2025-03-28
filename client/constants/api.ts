@@ -5,6 +5,7 @@ export const LOGIN_API = BACKEND_BASE_URL + `/user/login/`;
 export const REGISTER_API = BACKEND_BASE_URL + `/user/register/`;
 export const USER_CLONE_API = BACKEND_BASE_URL + `/user/user-clone/`;
 export const REFRESH_API = BACKEND_BASE_URL + `/token/refresh/`;
+export const VERIFY_ACCOUNT_API = BACKEND_BASE_URL + `/user/verify-account`;
 
 
 // export const REFRESH_API = BACKEND_BASE_URL+ `token/refresh/`;

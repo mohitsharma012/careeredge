@@ -10,14 +10,13 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { ProjectLoader } from '@/components/loaders/project-loader';
+import { Suspense } from 'react';
 
 import {Brain, Mail, Lock, AlertCircle, User, Gift, ArrowRight, Loader2} from "lucide-react";
 import {postWithOutTokenAPI} from '../../utils/apiRequest';
 import { LOGIN_API, REGISTER_API } from "../../constants/api";
 import toast from 'react-hot-toast';
 import { LOGIN, REGISTER, VERIFY } from "../../constants/constant";
-
-
 
 type AuthMode = typeof LOGIN | typeof REGISTER | typeof VERIFY ;
 type data = {
@@ -27,8 +26,8 @@ type data = {
   referralCode: string;
 }
 
-export default function AuthPage() {
-
+// Separate component that uses useSearchParams
+function AuthContent() {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const is_login = searchParams.get("is_login") === "true";
@@ -43,7 +42,6 @@ export default function AuthPage() {
     name: "",
     referralCode: referral_code ? referral_code : "",
   });
-
 
   useEffect(() => {
     const initialize = async () => {
@@ -62,8 +60,6 @@ export default function AuthPage() {
 
     initialize();
   }, [router, is_login]);
-
-
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,9 +97,6 @@ export default function AuthPage() {
         };
     
         postWithOutTokenAPI(REGISTER_API, formdata, successFn, errorFn);
-
-        
-
       }
     } catch (error: any) {
       setError(error.message);
@@ -113,7 +106,7 @@ export default function AuthPage() {
   };
 
   const handleGoogleLogin = async () => {
-    
+    // Google login implementation
   };
 
   return (
@@ -147,7 +140,7 @@ export default function AuthPage() {
             </p>
           </div>
 
-          {/* Error Mess age */}
+          {/* Error Message */}
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -327,12 +320,17 @@ export default function AuthPage() {
           </form>
         </motion.div>
       </div>
-
-      
     </div>
     )}
-
     </>
+  );
+}
 
+// Main component that wraps the content with Suspense
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<ProjectLoader message="Loading authentication..." />}>
+      <AuthContent />
+    </Suspense>
   );
 }

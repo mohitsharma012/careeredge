@@ -25,6 +25,7 @@ import openai
 openai_api_key = "test-key"
 from ..subscription.models import SubscriptionPlan, Subscription, TrialPeriodExtension
 from .constants import EMAIL_VERIFICATION, FORGOT_PASSWORD
+from ..base.services import send_email
 
 
 
@@ -36,7 +37,7 @@ token_router = APIRouter()
 async def register(request_data: UserRegisterSerializer, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request_data.email).first()
     if user:
-        raise response.BadRequest("User already exists")
+        raise response.BadRequest("User already exists with this email Please login")
     referral_code = referral_code_generator(request_data.name)
     while db.query(User).filter(User.referral_code == referral_code).first():
         referral_code = referral_code_generator(request_data.name)
@@ -48,14 +49,16 @@ async def register(request_data: UserRegisterSerializer, db: Session = Depends(g
         db.add(Referral(user_id=user.id, referred_by=referred_by.id))
     access_token = create_access_token({"email": user.email})
     refresh_token = create_refresh_token({"email": user.email})
-    verification_code = VerificationCode(user_id=user.id, code=generate_random_string(10), expires_at=datetime.utcnow() + timedelta(minutes=30), used_for=EMAIL_VERIFICATION)
+    verification_code = VerificationCode(user_id=user.id, code=generate_random_string(10), expires_at=datetime.utcnow() + timedelta(minutes=35), used_for=EMAIL_VERIFICATION)
     db.add(verification_code)
     db.commit()
-    link = generate_verification_link(verification_code.code, user.email)
-    # Send verification email
-    # send_verification_email(user.email, verification_code.code)
-
-    
+    link = generate_verification_link(user.email,verification_code.code)
+    await send_email(
+        to_email=user.email,
+        subject="Your Verification Link",
+        template_name="email_verification.html",
+        template_data={"name": user.name, "link": link},
+    )
     return response.Ok("Verification email sent", {"access_token": access_token, "refresh_token": refresh_token})
 
 @account_router.post("/login")

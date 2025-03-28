@@ -123,7 +123,7 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
         <div className="bg-custom-darker rounded-2xl p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white mb-2">Smart Resumes</h1>
+              <h1 className="text-2xl font-bold text-white mb-2">Customized Resumes</h1>
               <p className="text-custom-lightest text-sm">
                 AI-optimized resumes tailored for specific job positions
               </p>
@@ -133,7 +133,7 @@ export function SmartResume({ onCreateNew }: SmartResumeProps) {
               className="bg-white text-custom-darker hover:bg-white/90"
             >
               <Plus className="h-5 w-5 mr-2" />
-              Create Smart Resume
+              Customize new resume
             </Button>
           </div>
         </div>

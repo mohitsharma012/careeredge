@@ -49,7 +49,7 @@ export function CVAnalysis() {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [cvSource, setCVSource] = useState<CVSource>("upload");
+  const [cvSource, setCVSource] = useState<CVSource>("resume-builder");
   const [pastedCV, setPastedCV] = useState("");
   const [isResumeDialogOpen, setIsResumeDialogOpen] = useState(false);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export function CVAnalysis() {
   };
 
   const handleAnalyze = async () => {
-    const hasValidInput = 
+    const hasValidInput =
       (cvSource === "upload" && file) ||
       (cvSource === "paste" && pastedCV) ||
       (cvSource === "resume-builder" && selectedResume) ||
@@ -193,7 +193,7 @@ export function CVAnalysis() {
             ) : (
               <Button
                 onClick={() => setIsResumeDialogOpen(true)}
-                className="bg-custom-medium hover:bg-custom-dark"
+                className="border mt-10"
               >
                 <FolderOpen className="h-5 w-5 mr-2" />
                 Select Resume
@@ -207,18 +207,21 @@ export function CVAnalysis() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-custom-medium to-custom-dark rounded-2xl p-8">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-white/10 rounded-xl">
-            <Brain className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Analyze CV</h1>
-            <p className="text-custom-lightest">
-              Get AI-powered insights on how well your CV matches the job requirements
-            </p>
-          </div>
-        </div>
+
+      <div className="bg-custom-darker rounded-2xl p-7">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-white"
+        >
+          <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+            Analyze CV
+            <Sparkles className="h-6 w-6" />
+          </h2>
+          <p className="text-custom-lightest text-sm">
+            Get AI-powered insights on how well your CV matches the job requirements
+          </p>
+        </motion.div>
       </div>
 
       {/* Analysis Form */}
@@ -230,12 +233,22 @@ export function CVAnalysis() {
         >
           {/* CV Input */}
           <div className="bg-white rounded-xl border p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">CV Input</h2>
-              <div className="flex gap-2">
+            <div className="flex flex-col items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold me-auto">CV Input</h2>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  variant={cvSource === "resume-builder" ? "default" : "outline"}
+                  size="sm"
+                  className={cvSource === "resume-builder" ? "bg-custom-medium" : ""}
+                  onClick={() => setCVSource("resume-builder")}
+                >
+                  <Layout className="h-4 w-4 mr-2" />
+                  Resume Builder
+                </Button>
                 <Button
                   variant={cvSource === "upload" ? "default" : "outline"}
                   size="sm"
+                  className={cvSource === "upload" ? "bg-custom-medium" : ""}
                   onClick={() => setCVSource("upload")}
                 >
                   <Upload className="h-4 w-4 mr-2" />
@@ -244,22 +257,17 @@ export function CVAnalysis() {
                 <Button
                   variant={cvSource === "paste" ? "default" : "outline"}
                   size="sm"
+                  className={cvSource === "paste" ? "bg-custom-medium" : ""}
                   onClick={() => setCVSource("paste")}
                 >
                   <Pencil className="h-4 w-4 mr-2" />
                   Paste
                 </Button>
-                <Button
-                  variant={cvSource === "resume-builder" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCVSource("resume-builder")}
-                >
-                  <Layout className="h-4 w-4 mr-2" />
-                  Resume Builder
-                </Button>
+
                 <Button
                   variant={cvSource === "smart-resume" ? "default" : "outline"}
                   size="sm"
+                  className={cvSource === "smart-resume" ? "bg-custom-medium" : ""}
                   onClick={() => setCVSource("smart-resume")}
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
@@ -302,25 +310,24 @@ export function CVAnalysis() {
 
       {/* Resume Selection Dialog */}
       <Dialog open={isResumeDialogOpen} onOpenChange={setIsResumeDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl bg-white">
           <DialogHeader>
             <DialogTitle>Select Resume</DialogTitle>
           </DialogHeader>
           <div className="grid md:grid-cols-2 gap-4 mt-4">
             {mockResumes
-              .filter(resume => 
-                cvSource === "resume-builder" 
+              .filter(resume =>
+                cvSource === "resume-builder"
                   ? resume.type === "resume-builder"
                   : resume.type === "smart-resume"
               )
               .map((resume) => (
                 <div
                   key={resume.id}
-                  className={`relative rounded-xl border-2 transition-all cursor-pointer ${
-                    selectedResume === resume.id
-                      ? "border-custom-medium bg-custom-lightest"
-                      : "border-gray-200 hover:border-custom-medium"
-                  }`}
+                  className={`relative rounded-xl border-2 transition-all cursor-pointer ${selectedResume === resume.id
+                    ? "border-custom-medium bg-custom-lightest"
+                    : "border-gray-200 hover:border-custom-medium"
+                    }`}
                   onClick={() => handleResumeSelect(resume.id)}
                 >
                   <div className="p-4 flex items-center gap-4">

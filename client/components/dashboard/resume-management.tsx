@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CreateResumeDialog } from "@/components/resume-builder/create-resume-dialog";
-import { ResumeBuilderFlow } from "@/components/resume-builder/resume-builder-flow";
 import { ResumePreviewDialog } from "@/components/resume-preview-dialog";
 import {
   Plus,
@@ -45,6 +43,9 @@ interface SmartResume {
   keywords: string[];
   atsScore: number;
 }
+import ResumeBuilder from "@/app/builder/page";
+
+
 
 export function ResumeManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -54,6 +55,7 @@ export function ResumeManagement() {
   const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+
 
   const resumes: Resume[] = [
     {
@@ -105,10 +107,10 @@ export function ResumeManagement() {
       createdAt: resume.lastModified,
       matchScore: resume.matchScore,
       // Map the status values
-      status: resume.status === "complete" 
-        ? "complete" 
-        : resume.status === "review" 
-          ? "optimizing" 
+      status: resume.status === "complete"
+        ? "complete"
+        : resume.status === "review"
+          ? "optimizing"
           : "failed",
       template: "Modern Professional",
       views: resume.views,
@@ -136,129 +138,127 @@ export function ResumeManagement() {
     // Add optimization logic here
   };
 
-  if (isBuilderOpen) {
-    return <ResumeBuilderFlow />;
-  }
+
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="bg-custom-darker rounded-2xl p-7">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-white"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white mb-2">Resume Builder</h1>
-              <p className="text-custom-lightest text-sm">Create and manage your professional resumes</p>
-            </div>
-            <Button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-white text-custom-darker mr-8 hover:bg-white/80"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Create New Resume
-            </Button>
-          </div>
-        </motion.div>
-      </div>
+    <>
+      {isCreateModalOpen ? (
 
-      {/* Search Bar
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-custom-medium" />
-        <input
-          type="text"
-          placeholder="Search resumes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-custom-light focus:border-custom-medium outline-none"
-        />
-      </div> */}
+        <ResumeBuilder builder={true} />
+      ) : (
 
-      {/* Resumes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <AnimatePresence mode="popLayout">
-          {filteredResumes.map((resume) => (
+        <div className="space-y-8">
+          {/* Header */}
+          <div className="bg-custom-darker rounded-2xl p-7">
             <motion.div
-              key={resume.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="group bg-white rounded-xl border border-black/30 shadow-2xl  overflow-hidden hover:shadow-xl transition-all duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-white"
             >
-              <div className="aspect-[1/1.4142] relative">
-                <img
-                  src={resume.thumbnail}
-                  alt={resume.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                    <Button
-                      variant="ghost"
-                      className="text-white hover:text-white hover:bg-white/20"
-                      onClick={() => handlePreview(resume)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      Preview
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="text-white hover:text-white hover:bg-white/20"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-white mb-2">Resume Builder</h1>
+                  <p className="text-custom-lightest text-sm">Create and manage your professional resumes</p>
                 </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium mb-2">{resume.name}</h3>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      <span>{resume.views}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Download className="h-4 w-4" />
-                      <span>{resume.downloads}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{resume.lastModified}</span>
-                  </div>
-                </div>
+                <Button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="bg-white text-custom-darker mr-8 hover:bg-white/80"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create New Resume
+                </Button>
               </div>
             </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+          </div>
 
-      {/* Preview Dialog */}
-      <ResumePreviewDialog 
-        isPreviewOpen={isPreviewOpen}
-        setIsPreviewOpen={setIsPreviewOpen}
-        selectedResume={selectedResume as unknown as SmartResume}
-        isOptimizing={isOptimizing}
-        handleOptimizeMore={handleOptimizeMore}
-        onSendEmail={() => {
-          setIsPreviewOpen(false);
-          setIsEmailDialogOpen(true);
-        }}
-      />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <AnimatePresence mode="popLayout">
+              {filteredResumes.map((resume) => (
+                <motion.div
+                  key={resume.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="group bg-white rounded-xl border border-black/30 shadow-2xl  overflow-hidden hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="aspect-[1/1.4142] relative">
+                    <img
+                      src={resume.thumbnail}
+                      alt={resume.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                        <Button
+                          variant="ghost"
+                          className="text-white hover:text-white hover:bg-white/20"
+                          onClick={() => handlePreview(resume)}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Preview
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="text-white hover:text-white hover:bg-white/20"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-medium mb-2">{resume.name}</h3>
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <Eye className="h-4 w-4" />
+                          <span>{resume.views}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Download className="h-4 w-4" />
+                          <span>{resume.downloads}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{resume.lastModified}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
 
-      {/* Create New Resume Dialog */}
-      <CreateResumeDialog
+          {/* Preview Dialog */}
+          <ResumePreviewDialog
+            isPreviewOpen={isPreviewOpen}
+            setIsPreviewOpen={setIsPreviewOpen}
+            selectedResume={selectedResume as unknown as SmartResume}
+            isOptimizing={isOptimizing}
+            handleOptimizeMore={handleOptimizeMore}
+            onSendEmail={() => {
+              setIsPreviewOpen(false);
+              setIsEmailDialogOpen(true);
+            }}
+          />
+
+          {isCreateModalOpen && (
+
+            <ResumeBuilder />
+          )}
+
+          {/* Create New Resume Dialog */}
+          {/* <CreateResumeDialog
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
         onCreateFromScratch={handleCreateFromScratch}
         onUpload={handleFileUpload}
-      />
-    </div>
+      /> */}
+        </div>
+      )}
+    </>
   );
 }

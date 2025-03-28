@@ -7,6 +7,10 @@ import Link from 'next/link'
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel";
 import ImageCarousel from "@/components/ui/image-carousel";
 
+import SubscriptionPricing from "@/components/subscription/pricing";
+import Features from "@/components/index/features";
+import Testimonials from "@/components/index/testimonial";
+import FAQ from "@/components/index/faq";
 
 
 const features = [
@@ -105,182 +109,83 @@ const templatesData = [
 export default function Home() {
 
 
-
-
-
-
-
   return (
-    <main className="min-h-screen bg-custom-lightest">
+    <main className="min-h-screen bg-white">
 
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-8 min-h-screen flex flex-col max-w-5xl mx-auto gap-8">
-        <div className="max-w-7xl mx-auto text-center relative">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute inset-0 "></div>
-          </div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full  border border-blue-100 mb-6 animate-slide-up">
-            <Zap className="h-4 w-4 text-custom-moreDark" />
-            <span className="text-sm font-medium text-custom-darkest">AI-Powered CV Optimization</span>
-          </div>
-          <h1 className="text-4xl  md:text-6xl  text-left md:text-center font-bold md:font-medium  leading-tight mb-4 animate-scale-in">
-            Create a  Job-Ready <br /> <span className="text-custom-darker "> Professional Resume </span>
-            in Minutes
-          </h1>
-          <p className="text-base md:text-lg text-gray-600 mb-6 mx-auto max-w-2xl text-left md:text-center animate-slide-up">
-            Enhance your resume with AI technology to stand out to employers. Our service helps you get noticed and land your dream job.
-          </p>
-          <div className="flex justify-center gap-4 animate-slide-up">
-            <Button size="lg" className="bg-custom-darker hover:bg-custom-moreDarker text-white transition-all duration-300">
-              Analyze Your CV <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-2 text-custom-darker hover:text-white hover:bg-custom-medium transition-all duration-300">
-              Watch Demo
-            </Button>
-          </div>
-        </div>
-        <div className="mx-auto drop-shadow-[0_30px_30px_rgba(0,0,0,0.25)]">
-          <Image
-            src="/home/heroImage.png"
-            width={1000}
-            height={1000}
-            alt="Picture of the author"
-          />
 
-        </div>
-      </section>
+      <section className="h-screen bg-white flex mt-9 ">
+        <div className=" pb-16 px-8 md:px-0 my-auto flex flex-col md:flex-row max-w-7xl mx-auto gap-8 ">
 
-      {/* Quick Steps */}
-      <section className="md:py-16 px-4 max-w-4xl mx-auto">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl font-bold  leading-tight mb-2">How It Works ?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Transform your CV into an interview-winning document in three simple steps
+          <div className="max-w-7xl mt-24 md:mt-auto my-auto">
+            <div className="absolute inset-0 -z-10">
+              <div className="absolute inset-0 "></div>
+            </div>
+            <div className="inline-flex gap-2 px-2 py-1 rounded-full bg-blue-100  border border-blue-100 mb-6 animate-slide-up">
+              <Zap className="h-4 w-4 text-blue-700 mt-0.5" />
+              <span className="text-sm font-medium text-blue-700 font-sans">AI-Powered Resume Optimization</span>
+            </div>
+            <h1 className="text-4xl  md:text-6xl  text-left  font-bold md:font-semibold  leading-tight mb-4 animate-scale-in">
+              Land Your  <span className="text-custom-darker "> Dream Job </span> <br />
+              AI-Powered Resume Enhancement
+            </h1>
+            <p className="text-base md:text-lg text-gray-600 mb-6 mx-auto  text-left  animate-slide-up">
+              Enhance your resume with AI technology to stand out to employers. Our service helps you get noticed and land your dream job.
             </p>
-          </div>
-          <div className="grid  md:grid-cols-3 gap-8 ">
-            {quickSteps.map((step, index) => (
-              <div key={index} className="step-card bg-custom-darker md:px-8 py-9 md:py-12 flex md:flex-col gap-6 px-4">
-                <div className="md:mb-8 md:px-8 p-5 md:py-6 my-auto md:me-auto bg-white font-sans text-custom-darker md:text-3xl font-semibold rounded-xl">
-                  {step.icon}
-                </div>
-                <div className="flex  flex-col my-auto">
-                  <h3 className="md:text-2xl text-white font-bold md:font-medium md:mb-2">{step.title}</h3>
-                  <p className="text-gray-300 text-base font-sans">{step.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+            <div className="flex  gap-4 animate-slide-up">
 
-        </div>
-      </section>
-
-      {/* Templates */}
-      <div className="relative overflow-hidden  py-20 max-w-5xl mx-auto">
-        <div className="mx-auto flex flex-col mb-24">
-          <span className="text-sm mx-auto font-medium text-custom-darkest mb-4">OPTIMIZED DESIGN</span>
-          <div className="text-center mb-10 max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl mb-4 font-bold">Make your Resume with Proven Professional Templates</h2>
-            <p className="text-gray-600 px-8 text-base mx-auto">
-              Used one of our field-tested resume templates, designed by a team of HR experts and typographers.
-            </p>
-          </div>
-        </div>
-        <div className="">
-          <ImageCarousel items={templatesData} />
-        </div>
-        <div className="mx-auto flex md:mt-24">
-
-          <Link href="/templates" className="mx-auto border text-sm border-custom-darker text-custom-darker hover:bg-custom-dark hover:text-white py-3 px-6 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300">
-            See More Templates
-          </Link>
-        </div>
-      </div>
-
-
-
-      {/* Features
-      <section id="features" className="py-24 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif mb-4">Powered by Advanced AI</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Our AI technology analyzes thousands of successful CVs and job descriptions
-              to provide you with the most effective optimization suggestions.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="feature-card p-6  rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay={`${index * 100}`}>
-                <div className="feature-icon mb-6">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-medium mb-3">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-
-
-      {/* Success Stories */}
-      <section className="py-4 mt-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6 md:mb-12">
-            <h2 className="text-4xl font-serif mb-4">Success Stories</h2>
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className="h-5 w-5 text-yellow-400 fill-yellow-400"
-                  />
-                ))}
-              </div>
-              <span className="font-medium">4.9</span>
-              <span className="text-gray-600">out of 5</span>
+              <Link href={"/auth/signup"}  className="bg-custom-darker px-5 py-3  rounded-md hover:bg-custom-moreDarker text-white transition-all duration-300">
+                Create Your Resume 
+              </Link >
+              <Link href={"/auth/signup"} className="border-2 text-custom-darker px-5 py-2.5 rounded-md flex hover:text-white hover:bg-custom-darker transition-all duration-300">
+                Watch Demo
+              </Link >
             </div>
           </div>
-          <div className="grid md:grid-cols-3 md:gap-8">
-            {reviews.map((review, index) => (
-              <div key={index} className="feature-card p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    className="w-12 h-12 rounded-full ring-2 ring-blue-100"
-                  />
-                  <div>
-                    <div className="font-medium">{review.name}</div>
-                    <div className="text-sm text-gray-600">{review.role}</div>
-                  </div>
-                </div>
-                <p className="text-gray-600 italic">{review.text}</p>
-              </div>
-            ))}
+          <div className="mx-auto  md:mr-12  mt-20 drop-shadow-[0_20px_20px_rgba(0,0,0,0.15)]">
+            <Image
+              src="/home/heroImage.png"
+              width={700}
+              height={500}
+              alt="Picture of the author"
+            />
+
           </div>
         </div>
       </section>
 
+
+
+
+      <SubscriptionPricing />
+      
+      {/* Features */}
+      <Features/>
+      <Testimonials/>
+      <FAQ/>
+
+
+
+
+
+
+
       {/* CTA Section */}
-      <section className="py-16  px-4">
+      <section className="py-16  px-4 w-full">
         <div className="max-w-4xl mx-auto">
-          <div className="hero-card py-16 px-8 md:p-12 bg-gradient-to-r bg-custom-darker overflow-hidden relative">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjMzczAxMiAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMnptMC0yYzYuNjI3IDAgMTIgNS4zNzMgMTIgMTJzLTUuMzczIDEyLTEyIDEyLTEyLTUuMzczLTEyLTEyIDUuMzczLTEyIDEyLTEyeiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMSIvPjwvZz48L3N2Zz4=')] opacity-10"></div>
-            <div className="relative z-10 text-center">
+          <div className="hero-card py-16 px-8 md:p-12 bg-gradient-to-r from-custom-darker to-custom-moreDarker overflow-hidden ">
+            <div className=" w-auto text-center">
               <h2 className="text-4xl font-serif mb-4 text-white">
                 Ready to Optimize Your CV?
               </h2>
               <p className="text-blue-100 mb-8 max-w-xl mx-auto">
                 Join thousands of successful job seekers who have improved their CVs with AI
               </p>
-              <Button size="lg" variant="secondary" className="bg-white text-custom-darkest hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-300">
-                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+
+              <Link href={"/auth/signup"} className="bg-white mx-auto w-56 text-center text-sm text-moreDarker px-5 py-3 rounded-lg hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-300">
+                Get Started Free
+              </Link>
             </div>
           </div>
         </div>

@@ -217,7 +217,7 @@ export function CreateSmartResume({ onBack, onGenerate }: CreateSmartResumeProps
               className="w-full bg-custom-medium hover:bg-custom-dark h-12"
             >
               <Wand2 className="h-5 w-5 mr-2" />
-              Generate Smart Resume
+              Customize Resume
             </Button>
           </div>
         </div>

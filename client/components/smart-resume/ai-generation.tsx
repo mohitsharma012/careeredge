@@ -77,7 +77,7 @@ export function AIGeneration({ onComplete }: AIGenerationProps) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-custom-medium rounded-2xl p-6 m-auto shadow-xl border h-1/3"
+          className="bg-custom-lightest rounded-2xl p-6 m-auto shadow-xl border h-1/3"
         >
           {/* Header */}
           <div className="text-center mb-4">
@@ -105,9 +105,9 @@ export function AIGeneration({ onComplete }: AIGenerationProps) {
 
           {/* Progress Bar */}
           <div className="mb-4 flex">
-            <div className="h-2 bg-custom-dark w-[90%] my-auto rounded-full overflow-hidden">
+            <div className="h-2 bg-white w-[90%] my-auto rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-white"
+                className="h-full  bg-custom-dark"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5 }}

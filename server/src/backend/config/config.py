@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI : str = ""
     SECRET_KEY : str
 
+    SMTP_SERVER: str
+    SMTP_PORT: int
+    SMTP_EMAIL: str
+    SMTP_PASSWORD: str
+
     model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 
 

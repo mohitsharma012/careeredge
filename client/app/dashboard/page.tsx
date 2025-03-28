@@ -19,8 +19,6 @@ import {
   Star,
   ChevronDown,
   Search,
-  Bell,
-  Settings,
   Sparkles,
   Zap,
   BarChart,
@@ -37,20 +35,40 @@ import {
   Users,
   Rocket,
   Gauge,
-  ChevronLeft,
   Crown,
   ChevronRight,
   FileSearch,
   Menu,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { USER_CLONE_API } from "@/constants/api";
-import { getAPI } from "@/utils/apiRequest";
+import { getAPI } from '../../utils/apiRequest';
+import { USER_CLONE_API } from '../../constants/api';
+import Image from 'next/image';
+import Link from 'next/link';
+import logoSvg from '@/public/logo.svg';
+
+import { Bell, Settings, User, ChevronLeft, LogOut } from 'lucide-react';
+
 import { COMPANY_NAME } from "@/constants/constant";
 
+interface UserProfile {
+  name: string;
+  email: string;
+  plan: string;
+  photoURL?: string;
+}
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSection, setActiveSection] = useState("customize-resume");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,12 +100,45 @@ export default function Dashboard() {
     }
   }, [searchParams]);
 
+  const [user, setUser] = useState<UserProfile>({
+    name: 'Thomas Klein',
+    email: 'thomas.klein@example.com',
+    plan: 'Premium Plan',
+    photoURL: '', // Optional: URL to user's profile image from Google
+  });
+
+  const handleLogout = () => {
+    // In a real app, this would log the user out
+    console.log('User logged out');
+    // Remove the token from localStorage
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    // Redirect to the home page
+    router.push('/');
+  };
+
+  // Get initials from name for avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+  };
+
+  const userInitials = getInitials(user.name);
+
   const sidebarMenu = [
     {
-      title: "Dashboard",
-      icon: <Layout className="h-5 w-5" />,
-      section: "dashboard",
+      title: "Customize resume",
+      icon: <Brain className="h-5 w-5" />,
+      section: "customize-resume",
     },
+    // {
+    //   title: "Dashboard",
+    //   icon: <Layout className="h-5 w-5" />,
+    //   section: "dashboard",
+    // },
     {
       title: "Templates",
       icon: <Layers className="h-5 w-5" />,
@@ -97,11 +148,6 @@ export default function Dashboard() {
       title: "Resume Builder",
       icon: <FileText className="h-5 w-5" />,
       section: "resumes",
-    },
-    {
-      title: "Smart Resumes",
-      icon: <Brain className="h-5 w-5" />,
-      section: "smart-resumes",
     },
     {
       title: "Analyze CV",
@@ -184,7 +230,7 @@ export default function Dashboard() {
         return <TemplatesSection className="mt-0" />;
       case "resumes":
         return <ResumeManagement />;
-      case "smart-resumes":
+      case "customize-resume":
         return <SmartResumeFlow />;
       case "subscription":
         return <SubscriptionSection />;
@@ -363,16 +409,13 @@ export default function Dashboard() {
       ) : (
         <div className="min-h-screen bg-white">
           {/* Header */}
-          <div className="sticky top-0 left-0 right-0 border z-50 bg-white">
+          <div className="sticky  top-0 left-0 right-0 border z-50 bg-white">
             <div className="flex items-center justify-between  h-16 px-4 md:px-6">
               <div className="flex items-center gap-7">
                 <div className="flex items-center">
-                  <div className="bg-white p-2 rounded-xl">
-                    <Brain className="h-6 w-6 text-custom-darker" />
-                  </div>
-                  <span className="font-semibold text-xl text-custom-darker hidden md:block">
-                    {COMPANY_NAME}
-                  </span>
+                  <Link href={"/dashboard"} className="flex items-center mt-2 ms-3 gap-2 w-fit mx-auto mb-2 ">
+                    <Image src={logoSvg} alt="Logo" width={150} />
+                  </Link>
                 </div>
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -386,32 +429,50 @@ export default function Dashboard() {
                 </button>
 
               </div>
-              <div className="flex items-center gap-7">
-                Welcome back, Thomas
-
-
-              </div>
+              
               <div className="flex items-center gap-5">
-                <button className="relative p-2 bg-custom-darker text-white hover:bg-custom-dark rounded-xl">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-custom-medium"></span>
-                </button>
-                <button className="p-2 text-white bg-custom-darker hover:bg-custom-dark rounded-xl">
-                  <Settings className="h-5 w-5" />
-                </button>
-                <div className="flex items-center gap-3 text-custom-darker">
-                  <div className="hidden md:block text-right ">
-                    <div className="text-sm font-medium ">
-                      Thomas Klein
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer w-10 h-10 border-2 border-blue-100">
+                    {user.photoURL ? (
+                      <AvatarImage src={user.photoURL} alt={user.name} />
+                    ) : (
+                      <AvatarFallback className="bg-blue-100 text-blue-500 font-bold">
+                        {userInitials}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-bold">{user.name}</span>
+                      <span className="text-xs text-slate-500">{user.email}</span>
                     </div>
-                    <div className="text-x">
-                      Premium Plan
-                    </div>
-                  </div>
-                  <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-custom-medium font-medium">
-                    TK
-                  </div>
-                </div>
+                  </DropdownMenuLabel>
+                  {/* <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator /> */}
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+                
+                
+                
               </div>
             </div>
           </div>

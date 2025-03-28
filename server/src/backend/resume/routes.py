@@ -19,9 +19,9 @@ from .models import Resume
 
 resume_router = APIRouter()
 
-@resume_router.post("/")
-async def create_resume(request_data: Resume, db: Session = Depends(get_db)):
-    resume = Resume(**request_data.dict())
-    db.add(resume)
-    db.commit()
-    return response.Ok("Resume created successfully", {"resume_id": resume.id})
+# @resume_router.post("/")
+# async def create_resume(request_data: Resume, db: Session = Depends(get_db)):
+#     resume = Resume(**request_data.dict())
+#     db.add(resume)
+#     db.commit()
+#     return response.Ok("Resume created successfully", {"resume_id": resume.id})
