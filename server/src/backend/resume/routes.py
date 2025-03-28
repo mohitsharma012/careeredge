@@ -128,7 +128,6 @@ async def update_resume(
     db.refresh(resume)
     return response.Ok("Resume updated successfully")
 
-openai.api_key = "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"
 
 from .prompt import prompt
 
