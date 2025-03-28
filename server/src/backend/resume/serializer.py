@@ -104,5 +104,13 @@ class ResumeCreateSerilizer(BaseModel):
         }
     }
 
+class ResumeUpdateSerializer(ResumeCreateSerilizer):
+    id: int
+
+class OptimizeResumeSerializer(BaseModel):
+    resume_id: int
+    job_description: str
+
+
 
     
